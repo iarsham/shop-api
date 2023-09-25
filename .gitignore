@@ -19,3 +19,8 @@
 
 # Go workspace file
 go.work
+tmp/
+src/tmp
+src/.air.toml
+deploy/.env
+.idea/

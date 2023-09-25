@@ -1,0 +1,42 @@
+version: '3.9'
+
+x-base:
+  &base
+  env_file:
+    - ./.env
+  networks:
+    - shop-network
+  restart: always
+
+
+services:
+  postgres:
+    <<: *base
+    container_name: postgres
+    image: postgres:latest
+    expose:
+      - 5432
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${PG_DB}
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_PASSWORD=${PG_PASS}
+
+  app:
+    <<: *base
+    build:
+      context: ../.
+      dockerfile: deploy/Dockerfile
+    container_name: shop
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+
+networks:
+  shop-network:
+
+volumes:
+  db:

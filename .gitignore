@@ -21,6 +21,6 @@
 go.work
 tmp/
 src/tmp
-src/.air.toml
+src/runner.config
 deploy/.env
 .idea/

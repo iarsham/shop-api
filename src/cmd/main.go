@@ -2,16 +2,19 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/iarsham/shop-api/internal/db"
 	"log"
-	"net/http"
 )
 
 func main() {
+	err := db.OpenDB()
+	if err != nil {
+		log.Fatal("database connection failed: ", err)
+	}
+	defer db.CloseDB()
+
 	r := gin.Default()
-	r.GET("/", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{"response": "Hello From Gin"})
-	})
-	err := r.Run(":8000")
+	err = r.Run(":8000")
 	if err != nil {
 		log.Fatal(err)
 	}

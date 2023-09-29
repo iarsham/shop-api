@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"github.com/iarsham/shop-api/internal/common"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"os"
@@ -16,18 +17,15 @@ var (
 	PgDB     *gorm.DB
 )
 
-func OpenDB() error {
+func OpenDB(logs *common.Logger) error {
 	var err error
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", HOST, USER, PASSWORD, DB, PORT)
 	PgDB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		return err
-	}
+	common.LogError(logs, err)
+
 	db, _ := PgDB.DB()
 	err = db.Ping()
-	if err != nil {
-		return err
-	}
+	common.LogError(logs, err)
 
 	return nil
 }
@@ -36,10 +34,8 @@ func GetDB() *gorm.DB {
 	return PgDB
 }
 
-func CloseDB() {
+func CloseDB(logs *common.Logger) {
 	db, _ := PgDB.DB()
 	err := db.Close()
-	if err != nil {
-		return
-	}
+	common.LogWarning(logs, err)
 }

@@ -2,19 +2,14 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/iarsham/shop-api/internal/db"
+	"github.com/iarsham/shop-api/internal/configs"
 	"log"
 )
 
 func main() {
-	err := db.OpenDB()
-	if err != nil {
-		log.Fatal("database connection failed: ", err)
-	}
-	defer db.CloseDB()
-
+	configs.InitialSrv()
 	r := gin.Default()
-	err = r.Run(":8000")
+	err := r.Run(":8000")
 	if err != nil {
 		log.Fatal(err)
 	}

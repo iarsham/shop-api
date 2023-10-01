@@ -17,6 +17,17 @@ func NewUserController(logs *common.Logger) *UserController {
 	return &UserController{service: service}
 }
 
+// RegisterUserHandler
+// @Summary Register By Phone
+// @Description Create user with firstname / lastname / phone
+// @Tags Users
+// @Accept  json
+// @Produce  json
+// @Param Request body dto.RegisterRequest true "register body"
+// @Success 201 {object} responses.RegisterOKResponse "Success"
+// @Success 409 {object} responses.RegisterConflictResponse "Conflict"
+// @Success 500 {object} responses.InterServerErrorResponse "Error"
+// @Router /user/register [post]
 func (u *UserController) RegisterUserHandler(ctx *gin.Context) {
 	data := new(dto.RegisterRequest)
 	if err := ctx.ShouldBindJSON(&data); err != nil {
@@ -24,8 +35,13 @@ func (u *UserController) RegisterUserHandler(ctx *gin.Context) {
 		return
 	}
 
+	if exists := u.service.UserExistsByPhone(data.Phone); exists {
+		ctx.AbortWithStatusJSON(http.StatusConflict, gin.H{"response": "user with this phone already exists"})
+		return
+	}
+
 	if err := u.service.RegisterByPhone(data); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": "Internal server error"})
 		return
 	}
 

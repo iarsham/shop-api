@@ -1,0 +1,127 @@
+{
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "title": "Shop API Document",
+        "contact": {
+            "email": "arshamdev2001@gmail.com"
+        }
+    },
+    "host": "localhost:8000",
+    "basePath": "/api/v1/",
+    "paths": {
+        "/user/register": {
+            "post": {
+                "description": "Create user with firstname / lastname / phone",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Register By Phone",
+                "parameters": [
+                    {
+                        "description": "register body",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.RegisterOKResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/responses.RegisterConflictResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InterServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "first_name",
+                "last_name",
+                "phone"
+            ],
+            "properties": {
+                "first_name": {
+                    "type": "string",
+                    "maxLength": 75,
+                    "minLength": 1,
+                    "example": "James"
+                },
+                "last_name": {
+                    "type": "string",
+                    "maxLength": 75,
+                    "minLength": 1,
+                    "example": "Rodriguez"
+                },
+                "phone": {
+                    "type": "string",
+                    "maxLength": 13,
+                    "minLength": 11,
+                    "example": "+989021112299"
+                }
+            }
+        },
+        "responses.InterServerErrorResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "Internal server error"
+                }
+            }
+        },
+        "responses.RegisterConflictResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "user with this phone already exists"
+                }
+            }
+        },
+        "responses.RegisterOKResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "user created"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "Authorization": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

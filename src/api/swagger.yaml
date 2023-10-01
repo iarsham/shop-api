@@ -1,0 +1,87 @@
+basePath: /api/v1/
+definitions:
+  dto.RegisterRequest:
+    properties:
+      first_name:
+        example: James
+        maxLength: 75
+        minLength: 1
+        type: string
+      last_name:
+        example: Rodriguez
+        maxLength: 75
+        minLength: 1
+        type: string
+      phone:
+        example: "+989021112299"
+        maxLength: 13
+        minLength: 11
+        type: string
+    required:
+    - first_name
+    - last_name
+    - phone
+    type: object
+  responses.InterServerErrorResponse:
+    properties:
+      response:
+        example: Internal server error
+        type: string
+    type: object
+  responses.RegisterConflictResponse:
+    properties:
+      response:
+        example: user with this phone already exists
+        type: string
+    type: object
+  responses.RegisterOKResponse:
+    properties:
+      response:
+        example: user created
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact:
+    email: arshamdev2001@gmail.com
+  title: Shop API Document
+paths:
+  /user/register:
+    post:
+      consumes:
+      - application/json
+      description: Create user with firstname / lastname / phone
+      parameters:
+      - description: register body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.RegisterOKResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responses.RegisterConflictResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Register By Phone
+      tags:
+      - Users
+schemes:
+- http
+- https
+securityDefinitions:
+  Authorization:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

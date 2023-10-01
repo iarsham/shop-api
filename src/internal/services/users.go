@@ -23,10 +23,6 @@ func NewUserService(logs *common.Logger) *UserService {
 }
 
 func (s *UserService) RegisterByPhone(req *dto.RegisterRequest) error {
-	if exists := s.userExistsByPhone(req.Phone); exists {
-		return errors.New("user with this phone already exists")
-	}
-
 	bytePass := []byte(common.GeneratePassword())
 	hashPass, _ := bcrypt.GenerateFromPassword(bytePass, bcrypt.DefaultCost)
 	user := models.Users{
@@ -45,7 +41,7 @@ func (s *UserService) RegisterByPhone(req *dto.RegisterRequest) error {
 	return nil
 }
 
-func (s *UserService) userExistsByPhone(phone string) bool {
+func (s *UserService) UserExistsByPhone(phone string) bool {
 	var user models.Users
 	err := s.db.Where("phone=?", phone).First(&user).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {

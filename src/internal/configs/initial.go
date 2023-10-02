@@ -11,4 +11,7 @@ func InitialSrv(logs *common.Logger) {
 	err = db.MigrateTables(logs)
 	common.LogError(logs, err)
 	logs.Info("Postgres connected and Migration was successfully")
+	err = db.RedisClient()
+	common.LogError(logs, err)
+	logs.Info("Redis connected successfully")
 }

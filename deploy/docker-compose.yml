@@ -23,6 +23,13 @@ services:
       - POSTGRES_USER=${PG_USER}
       - POSTGRES_PASSWORD=${PG_PASS}
 
+  redis:
+    <<: *base
+    image: redis:latest
+    container_name: redis
+    expose:
+      - 6379
+
   app:
     <<: *base
     build:

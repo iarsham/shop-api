@@ -23,6 +23,7 @@ func main() {
 	logs := common.NewLogger()
 	configs.InitialSrv(logs)
 	defer db.CloseDB(logs)
+	defer db.CloseRedis(logs)
 	r := gin.Default()
 	routers.SetupRoutes(r, logs)
 	err := r.Run(":8000")

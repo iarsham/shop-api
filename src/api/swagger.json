@@ -58,6 +58,92 @@
                     }
                 }
             }
+        },
+        "/user/send-otp": {
+            "post": {
+                "description": "This endpoint receives the user's phone in request body and generates an otp. it then sends the otp to the user's phone via sms.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Send OTP",
+                "parameters": [
+                    {
+                        "description": "send otp body",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SendOTPRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.SendOtpOkResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.UserNotFoundResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/verify-otp": {
+            "post": {
+                "description": "this endpoint receives the user's phone and otp code in request body.if code match, the verification is successfully.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Verify OTP",
+                "parameters": [
+                    {
+                        "description": "verify otp body",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.VerifyOTPRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.VerifyOTPResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "incorrect",
+                        "schema": {
+                            "$ref": "#/definitions/responses.OtpIncorrectResponse"
+                        }
+                    },
+                    "410": {
+                        "description": "Expired",
+                        "schema": {
+                            "$ref": "#/definitions/responses.OtpExpiredResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -89,12 +175,65 @@
                 }
             }
         },
+        "dto.SendOTPRequest": {
+            "type": "object",
+            "required": [
+                "phone"
+            ],
+            "properties": {
+                "phone": {
+                    "type": "string",
+                    "maxLength": 13,
+                    "minLength": 11,
+                    "example": "+989021112299"
+                }
+            }
+        },
+        "dto.VerifyOTPRequest": {
+            "type": "object",
+            "required": [
+                "code",
+                "phone"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "maxLength": 6,
+                    "minLength": 6,
+                    "example": "241960"
+                },
+                "phone": {
+                    "type": "string",
+                    "maxLength": 13,
+                    "minLength": 11,
+                    "example": "+989021112299"
+                }
+            }
+        },
         "responses.InterServerErrorResponse": {
             "type": "object",
             "properties": {
                 "response": {
                     "type": "string",
                     "example": "Internal server error"
+                }
+            }
+        },
+        "responses.OtpExpiredResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "otp expired"
+                }
+            }
+        },
+        "responses.OtpIncorrectResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "code is incorrect"
                 }
             }
         },
@@ -113,6 +252,37 @@
                 "response": {
                     "type": "string",
                     "example": "user created"
+                }
+            }
+        },
+        "responses.SendOtpOkResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "otp was sent"
+                }
+            }
+        },
+        "responses.UserNotFoundResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "user not found"
+                }
+            }
+        },
+        "responses.VerifyOTPResponse": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTYzMzg4MTcsInBob25lIjoiKzk4OTAyMTMxMjIyNCIsInVzZXJfaWQiOiI1In0.DAxOeyiWpPZWXyVnnyLajMQ9SGsBKw65qOAurhjlFy0"
+                },
+                "refresh_token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY5NDE4MTcsInBob25lIjoiKzk4OTAyMTMxMjIyNCIsInVzZXJfaWQiOiI1In0.hzmZdfltaMDWaiTwO8IG1uPEyXOsu3JBs6giU2BDeMI"
                 }
             }
         }

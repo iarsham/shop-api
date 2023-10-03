@@ -2,11 +2,10 @@ package services
 
 import (
 	"errors"
-	"os"
-	"time"
-
 	"github.com/golang-jwt/jwt"
 	"gorm.io/gorm"
+	"os"
+	"time"
 
 	"github.com/iarsham/shop-api/internal/common"
 	"github.com/iarsham/shop-api/internal/db"
@@ -20,7 +19,7 @@ type TokenService struct {
 	db   *gorm.DB
 }
 
-func (t *TokenService) NewTokenService(logs *common.Logger) *TokenService {
+func NewTokenService(logs *common.Logger) *TokenService {
 	return &TokenService{
 		logs: logs,
 		db:   db.GetDB(),
@@ -30,25 +29,29 @@ func (t *TokenService) NewTokenService(logs *common.Logger) *TokenService {
 func (t *TokenService) GenerateToken(userID, phone string) (*dto.TokenDto, error) {
 	var err error
 	token := &dto.TokenDto{}
-	accessClaims := jwt.MapClaims{}
 
-	accessClaims["user_id"] = userID
-	accessClaims["phone"] = phone
+	accessClaims := jwt.MapClaims{
+		"user_id": userID,
+		"phone":   phone,
+		"exp":     time.Now().Add(time.Minute * 30).Unix(),
+	}
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
 	token.AccessToken, err = accessToken.SignedString([]byte(secretKey))
-	token.AccessExpire = time.Now().Add(30 * time.Minute).Unix()
 	if err != nil {
 		return nil, err
 	}
-	refreshClaims := jwt.MapClaims{}
-	refreshClaims["user_id"] = userID
-	refreshClaims["phone"] = phone
+
+	refreshClaims := jwt.MapClaims{
+		"user_id": userID,
+		"phone":   phone,
+		"exp":     time.Now().Add(time.Hour * 24 * 7).Unix(),
+	}
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
-	token.RefreshExpire = time.Now().Add(time.Hour * 72).Unix()
 	token.RefreshToken, err = refreshToken.SignedString([]byte(secretKey))
 	if err != nil {
 		return nil, err
 	}
+
 	return token, nil
 }
 

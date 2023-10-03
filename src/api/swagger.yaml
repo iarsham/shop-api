@@ -22,10 +22,48 @@ definitions:
     - last_name
     - phone
     type: object
+  dto.SendOTPRequest:
+    properties:
+      phone:
+        example: "+989021112299"
+        maxLength: 13
+        minLength: 11
+        type: string
+    required:
+    - phone
+    type: object
+  dto.VerifyOTPRequest:
+    properties:
+      code:
+        example: "241960"
+        maxLength: 6
+        minLength: 6
+        type: string
+      phone:
+        example: "+989021112299"
+        maxLength: 13
+        minLength: 11
+        type: string
+    required:
+    - code
+    - phone
+    type: object
   responses.InterServerErrorResponse:
     properties:
       response:
         example: Internal server error
+        type: string
+    type: object
+  responses.OtpExpiredResponse:
+    properties:
+      response:
+        example: otp expired
+        type: string
+    type: object
+  responses.OtpIncorrectResponse:
+    properties:
+      response:
+        example: code is incorrect
         type: string
     type: object
   responses.RegisterConflictResponse:
@@ -38,6 +76,27 @@ definitions:
     properties:
       response:
         example: user created
+        type: string
+    type: object
+  responses.SendOtpOkResponse:
+    properties:
+      response:
+        example: otp was sent
+        type: string
+    type: object
+  responses.UserNotFoundResponse:
+    properties:
+      response:
+        example: user not found
+        type: string
+    type: object
+  responses.VerifyOTPResponse:
+    properties:
+      access_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTYzMzg4MTcsInBob25lIjoiKzk4OTAyMTMxMjIyNCIsInVzZXJfaWQiOiI1In0.DAxOeyiWpPZWXyVnnyLajMQ9SGsBKw65qOAurhjlFy0
+        type: string
+      refresh_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY5NDE4MTcsInBob25lIjoiKzk4OTAyMTMxMjIyNCIsInVzZXJfaWQiOiI1In0.hzmZdfltaMDWaiTwO8IG1uPEyXOsu3JBs6giU2BDeMI
         type: string
     type: object
 host: localhost:8000
@@ -74,6 +133,64 @@ paths:
           schema:
             $ref: '#/definitions/responses.InterServerErrorResponse'
       summary: Register By Phone
+      tags:
+      - Users
+  /user/send-otp:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint receives the user's phone in request body and generates
+        an otp. it then sends the otp to the user's phone via sms.
+      parameters:
+      - description: send otp body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SendOTPRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.SendOtpOkResponse'
+        "404":
+          description: not found
+          schema:
+            $ref: '#/definitions/responses.UserNotFoundResponse'
+      summary: Send OTP
+      tags:
+      - Users
+  /user/verify-otp:
+    post:
+      consumes:
+      - application/json
+      description: this endpoint receives the user's phone and otp code in request
+        body.if code match, the verification is successfully.
+      parameters:
+      - description: verify otp body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.VerifyOTPRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.VerifyOTPResponse'
+        "401":
+          description: incorrect
+          schema:
+            $ref: '#/definitions/responses.OtpIncorrectResponse'
+        "410":
+          description: Expired
+          schema:
+            $ref: '#/definitions/responses.OtpExpiredResponse'
+      summary: Verify OTP
       tags:
       - Users
 schemes:

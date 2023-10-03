@@ -9,4 +9,6 @@ import (
 func UsersRoutes(r *gin.RouterGroup, logs *common.Logger) {
 	c := controllers.NewUserController(logs)
 	r.POST("/register", c.RegisterUserHandler)
+	r.POST("/send-otp", c.SendOTPHandler)
+	r.POST("/verify-otp", c.VerifyOTPHandler)
 }

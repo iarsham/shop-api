@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
+
 	"github.com/iarsham/shop-api/internal/common"
 	"github.com/iarsham/shop-api/internal/dto"
 	"github.com/iarsham/shop-api/internal/services"
-	"net/http"
 )
 
 type UserController struct {
@@ -25,8 +27,8 @@ func NewUserController(logs *common.Logger) *UserController {
 // @Produce  json
 // @Param Request body dto.RegisterRequest true "register body"
 // @Success 201 {object} responses.RegisterOKResponse "Success"
-// @Success 409 {object} responses.RegisterConflictResponse "Conflict"
-// @Success 500 {object} responses.InterServerErrorResponse "Error"
+// @Failure 409 {object} responses.RegisterConflictResponse "Conflict"
+// @Failure 500 {object} responses.InterServerErrorResponse "Error"
 // @Router /user/register [post]
 func (u *UserController) RegisterUserHandler(ctx *gin.Context) {
 	data := new(dto.RegisterRequest)
@@ -56,7 +58,7 @@ func (u *UserController) RegisterUserHandler(ctx *gin.Context) {
 // @Produce  json
 // @Param Request body dto.SendOTPRequest true "send otp body"
 // @Success 200 {object} responses.SendOtpOkResponse "Success"
-// @Success 404 {object} responses.UserNotFoundResponse "not found"
+// @Failure 404 {object} responses.UserNotFoundResponse "not found"
 // @Router /user/send-otp [post]
 func (u *UserController) SendOTPHandler(ctx *gin.Context) {
 	data := new(dto.SendOTPRequest)
@@ -84,8 +86,8 @@ func (u *UserController) SendOTPHandler(ctx *gin.Context) {
 // @Produce  json
 // @Param Request body dto.VerifyOTPRequest true "verify otp body"
 // @Success 200 {object} responses.VerifyOTPResponse "Success"
-// @Success 410 {object} responses.OtpExpiredResponse "Expired"
-// @Success 401 {object} responses.OtpIncorrectResponse "incorrect"
+// @Failure 410 {object} responses.OtpExpiredResponse "Expired"
+// @Failure 401 {object} responses.OtpIncorrectResponse "incorrect"
 // @Router /user/verify-otp [post]
 func (u *UserController) VerifyOTPHandler(ctx *gin.Context) {
 	data := new(dto.VerifyOTPRequest)
@@ -112,4 +114,51 @@ func (u *UserController) VerifyOTPHandler(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, token)
+}
+
+// UserHandler
+// @Summary Get User
+// @Description Retrieve user information by ID
+// @Tags Users
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} responses.UserResponse "Success"
+// @Failure 500 {object} responses.InterServerErrorResponse "Error"
+// @Router /user/ [Get]
+func (u *UserController) UserHandler(ctx *gin.Context) {
+	id := ctx.GetString("user_id")
+
+	userData, err := u.service.GetUserByID(id)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": "Internal server error"})
+		return
+	}
+	ctx.JSON(http.StatusOK, userData)
+}
+
+// UserUpdateHandler
+// @Summary Get User
+// @Description Update user information by ID
+// @Tags Users
+// @Accept  json
+// @Produce  json
+// @Param Request body dto.UpdateUserRequest true "upadte user body"
+// @Success 200 {object} responses.UserResponse "Success"
+// @Failure 500 {object} responses.InterServerErrorResponse "Error"
+// @Router /user/ [Put]
+func (u *UserController) UserUpdateHandler(ctx *gin.Context) {
+	id := ctx.GetString("user_id")
+	data := new(dto.UpdateUserRequest)
+
+	if err := ctx.ShouldBindJSON(&data); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
+		return
+	}
+
+	userData, err := u.service.UpdateUserByID(id, data)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": "Internal server error"})
+		return
+	}
+	ctx.JSON(http.StatusOK, userData)
 }

@@ -2,10 +2,11 @@ package services
 
 import (
 	"errors"
-	"github.com/golang-jwt/jwt"
-	"gorm.io/gorm"
 	"os"
 	"time"
+
+	"github.com/golang-jwt/jwt"
+	"gorm.io/gorm"
 
 	"github.com/iarsham/shop-api/internal/common"
 	"github.com/iarsham/shop-api/internal/db"
@@ -70,7 +71,7 @@ func (t *TokenService) VerifyToken(token string) (*jwt.Token, error) {
 }
 
 func (t *TokenService) GetClaims(token string) (map[string]any, error) {
-	var claimMap map[string]any
+	claimMap := make(map[string]any)
 	verifyToken, err := t.VerifyToken(token)
 	if err != nil {
 		return nil, err
@@ -78,7 +79,7 @@ func (t *TokenService) GetClaims(token string) (map[string]any, error) {
 	claims, ok := verifyToken.Claims.(jwt.MapClaims)
 	if ok && verifyToken.Valid {
 		for k, v := range claims {
-			claims[k] = v
+			claimMap[k] = v
 		}
 		return claimMap, nil
 	}

@@ -17,6 +17,73 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/user/": {
+            "get": {
+                "description": "Retrieve user information by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get User",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.UserResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InterServerErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update user information by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get User",
+                "parameters": [
+                    {
+                        "description": "upadte user body",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.UpdateUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.UserResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InterServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/user/register": {
             "post": {
                 "description": "Create user with firstname / lastname / phone",
@@ -37,7 +104,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.RegisterRequest"
+                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.RegisterRequest"
                         }
                     }
                 ],
@@ -83,7 +150,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.SendOTPRequest"
+                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.SendOTPRequest"
                         }
                     }
                 ],
@@ -123,7 +190,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.VerifyOTPRequest"
+                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.VerifyOTPRequest"
                         }
                     }
                 ],
@@ -151,7 +218,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dto.RegisterRequest": {
+        "github_com_iarsham_shop-api_internal_dto.RegisterRequest": {
             "type": "object",
             "required": [
                 "first_name",
@@ -179,7 +246,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.SendOTPRequest": {
+        "github_com_iarsham_shop-api_internal_dto.SendOTPRequest": {
             "type": "object",
             "required": [
                 "phone"
@@ -193,7 +260,28 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.VerifyOTPRequest": {
+        "github_com_iarsham_shop-api_internal_dto.UpdateUserRequest": {
+            "type": "object",
+            "required": [
+                "first_name",
+                "last_name"
+            ],
+            "properties": {
+                "first_name": {
+                    "type": "string",
+                    "maxLength": 75,
+                    "minLength": 1,
+                    "example": "James"
+                },
+                "last_name": {
+                    "type": "string",
+                    "maxLength": 75,
+                    "minLength": 1,
+                    "example": "Rodriguez"
+                }
+            }
+        },
+        "github_com_iarsham_shop-api_internal_dto.VerifyOTPRequest": {
             "type": "object",
             "required": [
                 "code",
@@ -211,6 +299,18 @@ const docTemplate = `{
                     "maxLength": 13,
                     "minLength": 11,
                     "example": "+989021112299"
+                }
+            }
+        },
+        "gorm.DeletedAt": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if Time is not NULL",
+                    "type": "boolean"
                 }
             }
         },
@@ -274,6 +374,35 @@ const docTemplate = `{
                 "response": {
                     "type": "string",
                     "example": "user not found"
+                }
+            }
+        },
+        "responses.UserResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isActive": {
+                    "type": "boolean"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         },

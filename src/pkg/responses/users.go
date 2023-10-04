@@ -1,6 +1,9 @@
 package responses
 
-import "github.com/iarsham/shop-api/internal/dto"
+import (
+	"github.com/iarsham/shop-api/internal/dto"
+	"github.com/iarsham/shop-api/internal/models"
+)
 
 type RegisterOKResponse struct {
 	Response string `example:"user created"`
@@ -28,4 +31,8 @@ type OtpExpiredResponse struct {
 
 type OtpIncorrectResponse struct {
 	Response string `example:"code is incorrect"`
+}
+
+type UserResponse struct {
+	models.Users
 }

@@ -4,20 +4,21 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/iarsham/shop-api/internal/common"
-	"github.com/iarsham/shop-api/internal/db"
-	"github.com/iarsham/shop-api/internal/dto"
-	"github.com/iarsham/shop-api/internal/models"
-	"github.com/redis/go-redis/v9"
+	"math/rand"
+	"os"
+	"strconv"
 	"time"
 
+	"github.com/redis/go-redis/v9"
 	"github.com/twilio/twilio-go"
 	openapi "github.com/twilio/twilio-go/rest/api/v2010"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"math/rand"
-	"os"
-	"strconv"
+
+	"github.com/iarsham/shop-api/internal/common"
+	"github.com/iarsham/shop-api/internal/db"
+	"github.com/iarsham/shop-api/internal/dto"
+	"github.com/iarsham/shop-api/internal/models"
 )
 
 var ctx = context.Background()
@@ -122,4 +123,31 @@ func (s *UserService) generateOTP() string {
 	}
 
 	return string(otp)
+}
+
+func (s *UserService) GetUserByID(id string) (*models.Users, error) {
+	var user models.Users
+	err := s.db.Where("id=?", id).First(&user).Error
+	switch {
+	case err == nil:
+		return &user, nil
+	case errors.Is(err, gorm.ErrRecordNotFound):
+		return nil, errors.New("user not found")
+	default:
+		return nil, err
+	}
+}
+
+func (s *UserService) UpdateUserByID(id string, data *dto.UpdateUserRequest) (*models.Users, error) {
+	user, err := s.GetUserByID(id)
+	if err != nil {
+		return nil, err
+	}
+	user.FirstName = data.FirstName
+	user.LastName = data.LastName
+	err = s.db.Save(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

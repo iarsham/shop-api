@@ -7,6 +7,6 @@ type Users struct {
 	FirstName string `gorm:"size:75;not null"`
 	LastName  string `gorm:"size:75;not null"`
 	Phone     string `gorm:"size:75;not null;index;unique"`
-	Password  string `gorm:"size:300;not null"`
+	Password  string `gorm:"size:300;not null" json:"-"`
 	IsActive  bool   `gorm:"not null;default:false"`
 }

@@ -1,6 +1,6 @@
 basePath: /api/v1/
 definitions:
-  dto.RegisterRequest:
+  github_com_iarsham_shop-api_internal_dto.RegisterRequest:
     properties:
       first_name:
         example: James
@@ -22,7 +22,7 @@ definitions:
     - last_name
     - phone
     type: object
-  dto.SendOTPRequest:
+  github_com_iarsham_shop-api_internal_dto.SendOTPRequest:
     properties:
       phone:
         example: "+989021112299"
@@ -32,7 +32,23 @@ definitions:
     required:
     - phone
     type: object
-  dto.VerifyOTPRequest:
+  github_com_iarsham_shop-api_internal_dto.UpdateUserRequest:
+    properties:
+      first_name:
+        example: James
+        maxLength: 75
+        minLength: 1
+        type: string
+      last_name:
+        example: Rodriguez
+        maxLength: 75
+        minLength: 1
+        type: string
+    required:
+    - first_name
+    - last_name
+    type: object
+  github_com_iarsham_shop-api_internal_dto.VerifyOTPRequest:
     properties:
       code:
         example: "241960"
@@ -47,6 +63,14 @@ definitions:
     required:
     - code
     - phone
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
     type: object
   responses.InterServerErrorResponse:
     properties:
@@ -90,6 +114,25 @@ definitions:
         example: user not found
         type: string
     type: object
+  responses.UserResponse:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      firstName:
+        type: string
+      id:
+        type: integer
+      isActive:
+        type: boolean
+      lastName:
+        type: string
+      phone:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   responses.VerifyOTPResponse:
     properties:
       access_token:
@@ -105,6 +148,50 @@ info:
     email: arshamdev2001@gmail.com
   title: Shop API Document
 paths:
+  /user/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve user information by ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.UserResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Get User
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Update user information by ID
+      parameters:
+      - description: upadte user body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.UserResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Get User
+      tags:
+      - Users
   /user/register:
     post:
       consumes:
@@ -116,7 +203,7 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/dto.RegisterRequest'
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.RegisterRequest'
       produces:
       - application/json
       responses:
@@ -147,7 +234,7 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/dto.SendOTPRequest'
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.SendOTPRequest'
       produces:
       - application/json
       responses:
@@ -174,7 +261,7 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/dto.VerifyOTPRequest'
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.VerifyOTPRequest'
       produces:
       - application/json
       responses:

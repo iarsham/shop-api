@@ -1,5 +1,13 @@
 basePath: /api/v1/
 definitions:
+  github_com_iarsham_shop-api_internal_dto.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY5NDE4MTcsInBob25lIjoiKzk4OTAyMTMxMjIyNCIsInVzZXJfaWQiOiI1In0.hzmZdfltaMDWaiTwO8IG1uPEyXOsu3JBs6giU2BDeMI
+        type: string
+    required:
+    - refresh_token
+    type: object
   github_com_iarsham_shop-api_internal_dto.RegisterRequest:
     properties:
       first_name:
@@ -88,6 +96,12 @@ definitions:
     properties:
       response:
         example: code is incorrect
+        type: string
+    type: object
+  responses.RefreshTokenResponse:
+    properties:
+      response:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY5NDE4MTcsInBob25lIjoiKzk4OTAyMTMxMjIyNCIsInVzZXJfaWQiOiI1In0.hzmZdfltaMDWaiTwO8IG1uPEyXOsu3JBs6giU2BDeMI
         type: string
     type: object
   responses.RegisterConflictResponse:
@@ -189,7 +203,33 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/responses.InterServerErrorResponse'
-      summary: Get User
+      summary: Update User
+      tags:
+      - Users
+  /user/refresh-token:
+    post:
+      consumes:
+      - application/json
+      description: Create new access token from refresh token
+      parameters:
+      - description: refresh token body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.RefreshTokenResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Get New AccessToken
       tags:
       - Users
   /user/register:

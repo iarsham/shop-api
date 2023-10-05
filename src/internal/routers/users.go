@@ -13,6 +13,7 @@ func UsersRoutes(r *gin.RouterGroup, logs *common.Logger) {
 	r.POST("/register", c.RegisterUserHandler)
 	r.POST("/send-otp", c.SendOTPHandler)
 	r.POST("/verify-otp", c.VerifyOTPHandler)
+	r.POST("/refresh-token", c.RefreshTokenHandler)
 	r.GET("/", middlewares.JwtAuthMiddleware(logs), c.UserHandler)
 	r.PUT("/", middlewares.JwtAuthMiddleware(logs), c.UserUpdateHandler)
 }

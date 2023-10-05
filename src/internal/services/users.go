@@ -151,3 +151,12 @@ func (s *UserService) UpdateUserByID(id string, data *dto.UpdateUserRequest) (*m
 	}
 	return user, nil
 }
+
+func (s *UserService) GetClaims(token string) (map[string]any, error) {
+	return s.token.GetClaims(token)
+}
+
+func (s *UserService) NewAccessToken(userID, phone string) string {
+	token, _ := s.token.GenerateAccessToken(userID, phone)
+	return token
+}

@@ -31,13 +31,7 @@ func (t *TokenService) GenerateToken(userID, phone string) (*dto.TokenDto, error
 	var err error
 	token := &dto.TokenDto{}
 
-	accessClaims := jwt.MapClaims{
-		"user_id": userID,
-		"phone":   phone,
-		"exp":     time.Now().Add(time.Minute * 30).Unix(),
-	}
-	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
-	token.AccessToken, err = accessToken.SignedString([]byte(secretKey))
+	token.AccessToken, err = t.GenerateAccessToken(userID, phone)
 	if err != nil {
 		return nil, err
 	}
@@ -54,6 +48,20 @@ func (t *TokenService) GenerateToken(userID, phone string) (*dto.TokenDto, error
 	}
 
 	return token, nil
+}
+
+func (t *TokenService) GenerateAccessToken(userID, phone string) (string, error) {
+	accessClaims := jwt.MapClaims{
+		"user_id": userID,
+		"phone":   phone,
+		"exp":     time.Now().Add(time.Minute * 30).Unix(),
+	}
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
+	access, err := accessToken.SignedString([]byte(secretKey))
+	if err != nil {
+		return "nil", err
+	}
+	return access, nil
 }
 
 func (t *TokenService) VerifyToken(token string) (*jwt.Token, error) {

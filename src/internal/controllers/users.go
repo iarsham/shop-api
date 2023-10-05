@@ -137,7 +137,7 @@ func (u *UserController) UserHandler(ctx *gin.Context) {
 }
 
 // UserUpdateHandler
-// @Summary Get User
+// @Summary Update User
 // @Description Update user information by ID
 // @Tags Users
 // @Accept  json
@@ -161,4 +161,32 @@ func (u *UserController) UserUpdateHandler(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, userData)
+}
+
+// RefreshTokenHandler
+// @Summary Get New AccessToken
+// @Description Create new access token from refresh token
+// @Tags Users
+// @Accept  json
+// @Produce  json
+// @Param Request body dto.RefreshTokenRequest true "refresh token body"
+// @Success 200 {object} responses.RefreshTokenResponse "Success"
+// @Failure 500 {object} responses.InterServerErrorResponse "Error"
+// @Router /user/refresh-token [Post]
+func (u *UserController) RefreshTokenHandler(ctx *gin.Context) {
+	data := new(dto.RefreshTokenRequest)
+
+	if err := ctx.ShouldBindJSON(&data); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
+		return
+	}
+
+	cliams, err := u.service.GetClaims(data.RefreshToken)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": "Internal server error"})
+		return
+	}
+
+	newAccessToken := u.service.NewAccessToken(cliams["user_id"].(string), cliams["phone"].(string))
+	ctx.JSON(http.StatusOK, gin.H{"response": newAccessToken})
 }

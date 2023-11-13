@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/iarsham/shop-api/internal/utils"
 	"math/rand"
 	"os"
 	"strconv"
@@ -40,7 +41,7 @@ func NewUserService(logs *common.Logger) *UserService {
 }
 
 func (s *UserService) RegisterByPhone(req *dto.RegisterRequest) error {
-	bytePass := []byte(common.GeneratePassword())
+	bytePass := []byte(utils.GeneratePassword())
 	hashPass, _ := bcrypt.GenerateFromPassword(bytePass, bcrypt.DefaultCost)
 	user := models.Users{
 		FirstName: req.FirstName,

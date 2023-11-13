@@ -142,7 +142,7 @@ func (u *UserController) UserHandler(ctx *gin.Context) {
 // @Tags Users
 // @Accept  json
 // @Produce  json
-// @Param Request body dto.UpdateUserRequest true "upadte user body"
+// @Param Request body dto.UpdateUserRequest true "update user body"
 // @Success 200 {object} responses.UserResponse "Success"
 // @Failure 500 {object} responses.InterServerErrorResponse "Error"
 // @Router /user/ [Put]
@@ -181,12 +181,12 @@ func (u *UserController) RefreshTokenHandler(ctx *gin.Context) {
 		return
 	}
 
-	cliams, err := u.service.GetClaims(data.RefreshToken)
+	claims, err := u.service.GetClaims(data.RefreshToken)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": "Internal server error"})
 		return
 	}
 
-	newAccessToken := u.service.NewAccessToken(cliams["user_id"].(string), cliams["phone"].(string))
+	newAccessToken := u.service.NewAccessToken(claims["user_id"].(string), claims["phone"].(string))
 	ctx.JSON(http.StatusOK, gin.H{"response": newAccessToken})
 }

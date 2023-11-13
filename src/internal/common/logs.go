@@ -1,36 +1,56 @@
 package common
 
 import (
-	"github.com/fatih/color"
+	"log"
 	"os"
-	"time"
 )
 
-var currentTime = time.Now().Format("2006-01-02 15:11")
+const (
+	colorRed    = "\033[31m"
+	colorGreen  = "\033[32m"
+	colorYellow = "\033[33m"
+	colorReset  = "\033[0m"
+)
 
 type Logger struct {
-	info  *color.Color
-	warn  *color.Color
-	fatal *color.Color
+	info  *log.Logger
+	warn  *log.Logger
+	fatal *log.Logger
 }
 
 func NewLogger() *Logger {
 	return &Logger{
-		info:  color.New(color.FgGreen),
-		warn:  color.New(color.FgYellow),
-		fatal: color.New(color.FgRed),
+		info:  log.New(os.Stdout, "[APP INFO] ", log.Ldate|log.Lshortfile),
+		warn:  log.New(os.Stdout, "[APP WARNING] ", log.Ldate|log.Lshortfile),
+		fatal: log.New(os.Stdout, "[APP FATAL] ", log.Ldate|log.Lshortfile),
 	}
 }
 
 func (l *Logger) Info(msg string) {
-	l.info.Printf("[%s][APP INFO] : %s\n", currentTime, msg)
+	l.info.Println(colorGreen + msg + colorReset)
 }
 
 func (l *Logger) Warn(msg string) {
-	l.info.Printf("[%s][APP Warning] : %s\n", currentTime, msg)
+	l.info.Println(colorYellow + msg + colorReset)
 }
 
 func (l *Logger) Fatal(msg string) {
-	l.info.Printf("[%s][APP Fatal] : %s\n", currentTime, msg)
+	l.info.Println(colorRed + msg + colorReset)
 	os.Exit(1)
+}
+
+func LogInfo(logs *Logger, msg string) {
+	logs.Info(msg)
+}
+
+func LogWarning(logs *Logger, err error) {
+	if err != nil {
+		logs.Warn(err.Error())
+	}
+}
+
+func LogError(logs *Logger, err error) {
+	if err != nil {
+		logs.Fatal(err.Error())
+	}
 }

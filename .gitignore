@@ -24,3 +24,4 @@ src/tmp
 src/runner.config
 deploy/.env
 .idea/
+src/runner.conf

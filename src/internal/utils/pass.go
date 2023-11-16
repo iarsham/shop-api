@@ -17,7 +17,6 @@ func GeneratePassword() string {
 	password := make([]byte, length)
 	for i := 0; i < length; i++ {
 		randomIndex, _ := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
-
 		password[i] = charset[randomIndex.Int64()]
 	}
 	return string(password)

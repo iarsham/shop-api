@@ -31,11 +31,11 @@ func (l *Logger) Info(msg string) {
 }
 
 func (l *Logger) Warn(msg string) {
-	l.info.Println(colorYellow + msg + colorReset)
+	l.warn.Println(colorYellow + msg + colorReset)
 }
 
 func (l *Logger) Fatal(msg string) {
-	l.info.Println(colorRed + msg + colorReset)
+	l.fatal.Println(colorRed + msg + colorReset)
 	os.Exit(1)
 }
 

@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"net/http"
 
 	"github.com/iarsham/shop-api/internal/common"
 	"github.com/iarsham/shop-api/internal/dto"
@@ -19,35 +18,32 @@ func NewUserController(logs *common.Logger) *UserController {
 	return &UserController{service: service}
 }
 
-// RegisterUserHandler
-// @Summary Register By Phone
+// RegisterLoginUserHandler
+// @Summary Register And Login By Phone
 // @Description Create user with firstname / lastname / phone
 // @Tags Users
 // @Accept  json
 // @Produce  json
-// @Param Request body dto.RegisterRequest true "register body"
+// @Param Request body dto.RegisterRequest true "register and login body"
 // @Success 201 {object} responses.RegisterOKResponse "Success"
-// @Failure 409 {object} responses.RegisterConflictResponse "Conflict"
+// @Success 200 {object} responses.RegisterOKResponse "Success"
 // @Failure 500 {object} responses.InterServerErrorResponse "Error"
-// @Router /user/register [post]
-func (u *UserController) RegisterUserHandler(ctx *gin.Context) {
+// @Router /user/register-login [post]
+func (u *UserController) RegisterLoginUserHandler(ctx *gin.Context) {
 	data := new(dto.RegisterRequest)
 	if err := ctx.ShouldBindJSON(&data); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
 		return
 	}
-
-	if exists := u.service.UserExistsByPhone(data.Phone); exists {
-		ctx.AbortWithStatusJSON(http.StatusConflict, gin.H{"response": "user with this phone already exists"})
+	if _, exists := u.service.GetUserByPhone(data.Phone); exists {
+		ctx.JSON(http.StatusOK, gin.H{"response": "Success, otp was sent"})
 		return
 	}
-
-	if err := u.service.RegisterByPhone(data); err != nil {
+	if err := u.service.RegisterLoginByPhone(data); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": "Internal server error"})
 		return
 	}
-
-	ctx.JSON(http.StatusCreated, gin.H{"response": "user created"})
+	ctx.JSON(http.StatusCreated, gin.H{"response": "Success, otp was sent"})
 }
 
 // SendOTPHandler

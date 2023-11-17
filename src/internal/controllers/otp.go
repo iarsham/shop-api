@@ -27,7 +27,7 @@ func NewOtpController(logs *common.Logger) *OtpController {
 // SendOTPHandler
 // @Summary Send OTP
 // @Description This endpoint receives the user's phone in request body and generates an otp. it then sends the otp to the user's phone via sms.
-// @Tags Users
+// @Tags OTP
 // @Accept  json
 // @Produce  json
 // @Param Request body dto.SendOTPRequest true "send otp body"
@@ -51,7 +51,7 @@ func (o *OtpController) SendOTPHandler(ctx *gin.Context) {
 // VerifyOTPHandler
 // @Summary Verify OTP
 // @Description this endpoint receives the user's otp code in request body.if code match, the verification is successfully.
-// @Tags Users
+// @Tags OTP
 // @Accept  json
 // @Produce  json
 // @Param Request body dto.VerifyOTPRequest true "verify otp body"

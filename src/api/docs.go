@@ -17,6 +17,132 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/otp/send": {
+            "post": {
+                "description": "This endpoint receives the user's phone in request body and generates an otp. it then sends the otp to the user's phone via sms.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OTP"
+                ],
+                "summary": "Send OTP",
+                "parameters": [
+                    {
+                        "description": "send otp body",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.SendOTPRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.SendOtpOkResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.UserNotFoundResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/otp/verify": {
+            "post": {
+                "description": "this endpoint receives the user's otp code in request body.if code match, the verification is successfully.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OTP"
+                ],
+                "summary": "Verify OTP",
+                "parameters": [
+                    {
+                        "description": "verify otp body",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.VerifyOTPRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.VerifyOTPResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "incorrect",
+                        "schema": {
+                            "$ref": "#/definitions/responses.OtpIncorrectResponse"
+                        }
+                    },
+                    "410": {
+                        "description": "Expired",
+                        "schema": {
+                            "$ref": "#/definitions/responses.OtpExpiredResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/token/refresh-token": {
+            "post": {
+                "description": "Create new access token from refresh token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tokens"
+                ],
+                "summary": "Get New AccessToken",
+                "parameters": [
+                    {
+                        "description": "refresh token body",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.RefreshTokenRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.RefreshTokenResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InterServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/user/": {
             "get": {
                 "description": "Retrieve user information by ID",
@@ -59,7 +185,7 @@ const docTemplate = `{
                 "summary": "Update User",
                 "parameters": [
                     {
-                        "description": "upadte user body",
+                        "description": "update user body",
                         "name": "Request",
                         "in": "body",
                         "required": true,
@@ -84,47 +210,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/refresh-token": {
-            "post": {
-                "description": "Create new access token from refresh token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Get New AccessToken",
-                "parameters": [
-                    {
-                        "description": "refresh token body",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.RefreshTokenRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "$ref": "#/definitions/responses.RefreshTokenResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Error",
-                        "schema": {
-                            "$ref": "#/definitions/responses.InterServerErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/register": {
+        "/user/register-login": {
             "post": {
                 "description": "Create user with firstname / lastname / phone",
                 "consumes": [
@@ -136,121 +222,35 @@ const docTemplate = `{
                 "tags": [
                     "Users"
                 ],
-                "summary": "Register By Phone",
+                "summary": "Register And Login By Phone",
                 "parameters": [
                     {
-                        "description": "register body",
+                        "description": "register and login body",
                         "name": "Request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.RegisterRequest"
+                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.RegisterLoginRequest"
                         }
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.LoginOKResponse"
+                        }
+                    },
                     "201": {
                         "description": "Success",
                         "schema": {
                             "$ref": "#/definitions/responses.RegisterOKResponse"
                         }
                     },
-                    "409": {
-                        "description": "Conflict",
-                        "schema": {
-                            "$ref": "#/definitions/responses.RegisterConflictResponse"
-                        }
-                    },
                     "500": {
                         "description": "Error",
                         "schema": {
                             "$ref": "#/definitions/responses.InterServerErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/send-otp": {
-            "post": {
-                "description": "This endpoint receives the user's phone in request body and generates an otp. it then sends the otp to the user's phone via sms.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Send OTP",
-                "parameters": [
-                    {
-                        "description": "send otp body",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.SendOTPRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "$ref": "#/definitions/responses.SendOtpOkResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "not found",
-                        "schema": {
-                            "$ref": "#/definitions/responses.UserNotFoundResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/verify-otp": {
-            "post": {
-                "description": "this endpoint receives the user's phone and otp code in request body.if code match, the verification is successfully.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Verify OTP",
-                "parameters": [
-                    {
-                        "description": "verify otp body",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.VerifyOTPRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "$ref": "#/definitions/responses.VerifyOTPResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "incorrect",
-                        "schema": {
-                            "$ref": "#/definitions/responses.OtpIncorrectResponse"
-                        }
-                    },
-                    "410": {
-                        "description": "Expired",
-                        "schema": {
-                            "$ref": "#/definitions/responses.OtpExpiredResponse"
                         }
                     }
                 }
@@ -270,11 +270,9 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_iarsham_shop-api_internal_dto.RegisterRequest": {
+        "github_com_iarsham_shop-api_internal_dto.RegisterLoginRequest": {
             "type": "object",
             "required": [
-                "first_name",
-                "last_name",
                 "phone"
             ],
             "properties": {
@@ -336,8 +334,7 @@ const docTemplate = `{
         "github_com_iarsham_shop-api_internal_dto.VerifyOTPRequest": {
             "type": "object",
             "required": [
-                "code",
-                "phone"
+                "code"
             ],
             "properties": {
                 "code": {
@@ -345,12 +342,6 @@ const docTemplate = `{
                     "maxLength": 6,
                     "minLength": 6,
                     "example": "241960"
-                },
-                "phone": {
-                    "type": "string",
-                    "maxLength": 13,
-                    "minLength": 11,
-                    "example": "+989021112299"
                 }
             }
         },
@@ -372,6 +363,15 @@ const docTemplate = `{
                 "response": {
                     "type": "string",
                     "example": "Internal server error"
+                }
+            }
+        },
+        "responses.LoginOKResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "Success, otp was sent"
                 }
             }
         },
@@ -402,21 +402,12 @@ const docTemplate = `{
                 }
             }
         },
-        "responses.RegisterConflictResponse": {
-            "type": "object",
-            "properties": {
-                "response": {
-                    "type": "string",
-                    "example": "user with this phone already exists"
-                }
-            }
-        },
         "responses.RegisterOKResponse": {
             "type": "object",
             "properties": {
                 "response": {
                     "type": "string",
-                    "example": "user created"
+                    "example": "Success, otp was sent"
                 }
             }
         },
@@ -426,6 +417,17 @@ const docTemplate = `{
                 "response": {
                     "type": "string",
                     "example": "otp was sent"
+                }
+            }
+        },
+        "responses.Token": {
+            "type": "object",
+            "properties": {
+                "access-token": {
+                    "type": "string"
+                },
+                "refresh-token": {
+                    "type": "string"
                 }
             }
         },
@@ -447,16 +449,16 @@ const docTemplate = `{
                 "deletedAt": {
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
-                "firstName": {
+                "first_name": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
                 },
-                "isActive": {
+                "is_active": {
                     "type": "boolean"
                 },
-                "lastName": {
+                "last_name": {
                     "type": "string"
                 },
                 "phone": {
@@ -470,13 +472,8 @@ const docTemplate = `{
         "responses.VerifyOTPResponse": {
             "type": "object",
             "properties": {
-                "access_token": {
-                    "type": "string",
-                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTYzMzg4MTcsInBob25lIjoiKzk4OTAyMTMxMjIyNCIsInVzZXJfaWQiOiI1In0.DAxOeyiWpPZWXyVnnyLajMQ9SGsBKw65qOAurhjlFy0"
-                },
-                "refresh_token": {
-                    "type": "string",
-                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY5NDE4MTcsInBob25lIjoiKzk4OTAyMTMxMjIyNCIsInVzZXJfaWQiOiI1In0.hzmZdfltaMDWaiTwO8IG1uPEyXOsu3JBs6giU2BDeMI"
+                "response": {
+                    "$ref": "#/definitions/responses.Token"
                 }
             }
         }

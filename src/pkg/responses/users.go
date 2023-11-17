@@ -16,6 +16,4 @@ type UserNotFoundResponse struct {
 	Response string `example:"user not found"`
 }
 
-type UserResponse struct {
-	models.Users
-}
+type UserResponse models.Users

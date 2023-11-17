@@ -8,7 +8,7 @@ definitions:
     required:
     - refresh_token
     type: object
-  github_com_iarsham_shop-api_internal_dto.RegisterRequest:
+  github_com_iarsham_shop-api_internal_dto.RegisterLoginRequest:
     properties:
       first_name:
         example: James
@@ -26,8 +26,6 @@ definitions:
         minLength: 11
         type: string
     required:
-    - first_name
-    - last_name
     - phone
     type: object
   github_com_iarsham_shop-api_internal_dto.SendOTPRequest:
@@ -63,14 +61,8 @@ definitions:
         maxLength: 6
         minLength: 6
         type: string
-      phone:
-        example: "+989021112299"
-        maxLength: 13
-        minLength: 11
-        type: string
     required:
     - code
-    - phone
     type: object
   gorm.DeletedAt:
     properties:
@@ -84,6 +76,12 @@ definitions:
     properties:
       response:
         example: Internal server error
+        type: string
+    type: object
+  responses.LoginOKResponse:
+    properties:
+      response:
+        example: Success, otp was sent
         type: string
     type: object
   responses.OtpExpiredResponse:
@@ -104,22 +102,23 @@ definitions:
         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY5NDE4MTcsInBob25lIjoiKzk4OTAyMTMxMjIyNCIsInVzZXJfaWQiOiI1In0.hzmZdfltaMDWaiTwO8IG1uPEyXOsu3JBs6giU2BDeMI
         type: string
     type: object
-  responses.RegisterConflictResponse:
-    properties:
-      response:
-        example: user with this phone already exists
-        type: string
-    type: object
   responses.RegisterOKResponse:
     properties:
       response:
-        example: user created
+        example: Success, otp was sent
         type: string
     type: object
   responses.SendOtpOkResponse:
     properties:
       response:
         example: otp was sent
+        type: string
+    type: object
+  responses.Token:
+    properties:
+      access-token:
+        type: string
+      refresh-token:
         type: string
     type: object
   responses.UserNotFoundResponse:
@@ -134,13 +133,13 @@ definitions:
         type: string
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
-      firstName:
+      first_name:
         type: string
       id:
         type: integer
-      isActive:
+      is_active:
         type: boolean
-      lastName:
+      last_name:
         type: string
       phone:
         type: string
@@ -149,12 +148,8 @@ definitions:
     type: object
   responses.VerifyOTPResponse:
     properties:
-      access_token:
-        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTYzMzg4MTcsInBob25lIjoiKzk4OTAyMTMxMjIyNCIsInVzZXJfaWQiOiI1In0.DAxOeyiWpPZWXyVnnyLajMQ9SGsBKw65qOAurhjlFy0
-        type: string
-      refresh_token:
-        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY5NDE4MTcsInBob25lIjoiKzk4OTAyMTMxMjIyNCIsInVzZXJfaWQiOiI1In0.hzmZdfltaMDWaiTwO8IG1uPEyXOsu3JBs6giU2BDeMI
-        type: string
+      response:
+        $ref: '#/definitions/responses.Token'
     type: object
 host: localhost:8000
 info:
@@ -162,107 +157,7 @@ info:
     email: arshamdev2001@gmail.com
   title: Shop API Document
 paths:
-  /user/:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve user information by ID
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: '#/definitions/responses.UserResponse'
-        "500":
-          description: Error
-          schema:
-            $ref: '#/definitions/responses.InterServerErrorResponse'
-      summary: Get User
-      tags:
-      - Users
-    put:
-      consumes:
-      - application/json
-      description: Update user information by ID
-      parameters:
-      - description: upadte user body
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.UpdateUserRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: '#/definitions/responses.UserResponse'
-        "500":
-          description: Error
-          schema:
-            $ref: '#/definitions/responses.InterServerErrorResponse'
-      summary: Update User
-      tags:
-      - Users
-  /user/refresh-token:
-    post:
-      consumes:
-      - application/json
-      description: Create new access token from refresh token
-      parameters:
-      - description: refresh token body
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.RefreshTokenRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: '#/definitions/responses.RefreshTokenResponse'
-        "500":
-          description: Error
-          schema:
-            $ref: '#/definitions/responses.InterServerErrorResponse'
-      summary: Get New AccessToken
-      tags:
-      - Users
-  /user/register:
-    post:
-      consumes:
-      - application/json
-      description: Create user with firstname / lastname / phone
-      parameters:
-      - description: register body
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.RegisterRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Success
-          schema:
-            $ref: '#/definitions/responses.RegisterOKResponse'
-        "409":
-          description: Conflict
-          schema:
-            $ref: '#/definitions/responses.RegisterConflictResponse'
-        "500":
-          description: Error
-          schema:
-            $ref: '#/definitions/responses.InterServerErrorResponse'
-      summary: Register By Phone
-      tags:
-      - Users
-  /user/send-otp:
+  /otp/send:
     post:
       consumes:
       - application/json
@@ -288,13 +183,13 @@ paths:
             $ref: '#/definitions/responses.UserNotFoundResponse'
       summary: Send OTP
       tags:
-      - Users
-  /user/verify-otp:
+      - OTP
+  /otp/verify:
     post:
       consumes:
       - application/json
-      description: this endpoint receives the user's phone and otp code in request
-        body.if code match, the verification is successfully.
+      description: this endpoint receives the user's otp code in request body.if code
+        match, the verification is successfully.
       parameters:
       - description: verify otp body
         in: body
@@ -318,6 +213,106 @@ paths:
           schema:
             $ref: '#/definitions/responses.OtpExpiredResponse'
       summary: Verify OTP
+      tags:
+      - OTP
+  /token/refresh-token:
+    post:
+      consumes:
+      - application/json
+      description: Create new access token from refresh token
+      parameters:
+      - description: refresh token body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.RefreshTokenResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Get New AccessToken
+      tags:
+      - Tokens
+  /user/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve user information by ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.UserResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Get User
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Update user information by ID
+      parameters:
+      - description: update user body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.UserResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Update User
+      tags:
+      - Users
+  /user/register-login:
+    post:
+      consumes:
+      - application/json
+      description: Create user with firstname / lastname / phone
+      parameters:
+      - description: register and login body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.RegisterLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.LoginOKResponse'
+        "201":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.RegisterOKResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Register And Login By Phone
       tags:
       - Users
 schemes:

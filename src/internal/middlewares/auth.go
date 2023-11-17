@@ -20,13 +20,11 @@ func JwtAuthMiddleware(logs *common.Logger) gin.HandlerFunc {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"response": "authenticate required"})
 			return
 		}
-
 		authToken := strings.Split(authHeader, " ")
 		if len(authToken) != 2 || strings.ToLower(authToken[0]) != "bearer" {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"response": "authorization format is not correct"})
 			return
 		}
-		
 		claims, err := tokenService.GetClaims(authToken[1])
 		if err != nil {
 			switch err.(*jwt.ValidationError).Errors {
@@ -37,7 +35,10 @@ func JwtAuthMiddleware(logs *common.Logger) gin.HandlerFunc {
 				ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"response": "token invalid"})
 				return
 			}
-
+		}
+		if claims["sub"] != nil {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"response": "refresh token not allowed"})
+			return
 		}
 		ctx.Set("user_id", claims["user_id"])
 		ctx.Set("phone", claims["phone"])

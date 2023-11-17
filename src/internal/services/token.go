@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -10,10 +11,13 @@ import (
 
 	"github.com/iarsham/shop-api/internal/common"
 	"github.com/iarsham/shop-api/internal/db"
-	"github.com/iarsham/shop-api/internal/dto"
 )
 
-var secretKey = os.Getenv("SECRET_KEY")
+var (
+	secretKey        = os.Getenv("SECRET_KEY")
+	accessExpireEnv  = os.Getenv("ACCESS_TOKEN_EXPIRE_MIN")
+	refreshExpireEnv = os.Getenv("REFRESH_TOKEN_EXPIRE_DAY")
+)
 
 type TokenService struct {
 	logs *common.Logger
@@ -27,41 +31,31 @@ func NewTokenService(logs *common.Logger) *TokenService {
 	}
 }
 
-func (t *TokenService) GenerateToken(userID, phone string) (*dto.TokenDto, error) {
-	var err error
-	token := &dto.TokenDto{}
-
-	token.AccessToken, err = t.GenerateAccessToken(userID, phone)
-	if err != nil {
-		return nil, err
-	}
-
-	refreshClaims := jwt.MapClaims{
-		"user_id": userID,
-		"phone":   phone,
-		"exp":     time.Now().Add(time.Hour * 24 * 7).Unix(),
-	}
-	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
-	token.RefreshToken, err = refreshToken.SignedString([]byte(secretKey))
-	if err != nil {
-		return nil, err
-	}
-
-	return token, nil
-}
-
-func (t *TokenService) GenerateAccessToken(userID, phone string) (string, error) {
+func (t *TokenService) GenerateAccessToken(userID string, phone string) (string, error) {
+	accessExp, _ := strconv.Atoi(accessExpireEnv)
 	accessClaims := jwt.MapClaims{
 		"user_id": userID,
 		"phone":   phone,
-		"exp":     time.Now().Add(time.Minute * 30).Unix(),
+		"exp":     time.Now().Add(time.Minute * time.Duration(accessExp)).Unix(),
 	}
-	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
-	access, err := accessToken.SignedString([]byte(secretKey))
+	accessToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims).SignedString([]byte(secretKey))
 	if err != nil {
-		return "nil", err
+		return "", err
 	}
-	return access, nil
+	return accessToken, nil
+}
+
+func (t *TokenService) GenerateRefreshToken(userID string) (string, error) {
+	refreshExp, _ := strconv.Atoi(refreshExpireEnv)
+	refreshClaims := jwt.MapClaims{
+		"sub": userID,
+		"exp": time.Now().Add(time.Hour * 24 * time.Duration(refreshExp)).Unix(),
+	}
+	refreshToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims).SignedString([]byte(secretKey))
+	if err != nil {
+		return "", err
+	}
+	return refreshToken, nil
 }
 
 func (t *TokenService) VerifyToken(token string) (*jwt.Token, error) {

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/iarsham/shop-api/internal/common"
 	"github.com/iarsham/shop-api/internal/db"
+	"github.com/iarsham/shop-api/internal/middlewares"
 	"github.com/iarsham/shop-api/internal/routers"
 	"github.com/iarsham/shop-api/internal/validators"
 )
@@ -24,6 +25,7 @@ func InitialSrv(logs *common.Logger) {
 
 	r := gin.Default()
 	routers.SetupRoutes(r, logs)
+	r.Use(middlewares.CorsMiddleware())
 	err = r.Run()
 	common.LogError(logs, err)
 }

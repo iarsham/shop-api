@@ -20,7 +20,7 @@ var (
 func OpenDB(logs *common.Logger) error {
 	var err error
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", HOST, USER, PASSWORD, DB, PORT)
-	PgDB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	PgDB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{SkipDefaultTransaction: true})
 	common.LogError(logs, err)
 
 	db, _ := PgDB.DB()

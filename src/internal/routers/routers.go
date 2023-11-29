@@ -28,6 +28,12 @@ func SetupRoutes(r *gin.Engine, logs *common.Logger) {
 	tokenGroup := apiPrefix.Group("/token")
 	TokenRoutes(tokenGroup, logs)
 
+	categoryGroup := apiPrefix.Group("/category")
+	CategoryRoutes(categoryGroup, logs)
+
+	productsGroup := apiPrefix.Group("/product")
+	ProductsRoutes(productsGroup, logs)
+
 	api.SwaggerInfo.BasePath = BaseURL
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerfiles.Handler, ginSwagger.DefaultModelsExpandDepth(-1)))
 

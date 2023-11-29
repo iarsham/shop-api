@@ -25,3 +25,4 @@ src/runner.config
 deploy/.env
 .idea/
 src/runner.conf
+src/.air.toml

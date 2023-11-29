@@ -9,6 +9,7 @@ type Users struct {
 	Phone     string     `gorm:"size:75;not null;index;unique" json:"phone"`
 	Password  string     `gorm:"size:300;not null" json:"-"`
 	IsActive  bool       `gorm:"not null;default:false" json:"is_active"`
+	IsAdmin   bool       `gorm:"not null;default:false" json:"is_admin"`
 	Comments  []Comments `gorm:"foreignKey:UsersID;references:ID"`
 	Likes     []Likes    `gorm:"foreignKey:UsersID;references:ID"`
 }

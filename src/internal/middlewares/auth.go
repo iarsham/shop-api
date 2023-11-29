@@ -45,3 +45,16 @@ func JwtAuthMiddleware(logs *common.Logger) gin.HandlerFunc {
 		ctx.Next()
 	}
 }
+
+func IsAdminMiddleware(logs *common.Logger) gin.HandlerFunc {
+	userService := services.NewUserService(logs)
+
+	return func(ctx *gin.Context) {
+		userID := ctx.GetString("user_id")
+		if user, _ := userService.GetUserByID(userID); !user.IsAdmin {
+			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"response": "permission not allowed, just admin user can perform this action"})
+			return
+		}
+		ctx.Next()
+	}
+}

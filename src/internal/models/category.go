@@ -12,7 +12,7 @@ type Category struct {
 	Products []Products `gorm:"foreignKey:CategorySlug;references:Slug"`
 }
 
-func (c *Category) BeforeSave(*gorm.DB) error {
+func (c *Category) BeforeCreate(*gorm.DB) error {
 	c.Slug = slug.Make(c.Title)
 	return nil
 }

@@ -17,6 +17,184 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/category/create": {
+            "post": {
+                "description": "This endpoint creates a new category in the store. The request body must contain the following information:",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Create New Category",
+                "parameters": [
+                    {
+                        "description": "create category body",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.CategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CategoryResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Warn",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CategoryExistsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InterServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/category/delete/{pk}": {
+            "delete": {
+                "description": "This endpoint deletes an existing Category from the store.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Delete exists Category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category Slug",
+                        "name": "pk",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.DeleteRecordResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CategoryNotFoundResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InterServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/category/list": {
+            "get": {
+                "description": "This endpoint returns a list of all categories in the store.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Get All Categories",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CategoryResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InterServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/category/update/{pk}": {
+            "put": {
+                "description": "This endpoint updates an existing Category in the store. The request body must contain the following information:",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Update exists Category",
+                "parameters": [
+                    {
+                        "description": "update category body",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.CategoryRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Category Slug",
+                        "name": "pk",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CategoryResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CategoryNotFoundResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Warn",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CategoryDuplicateResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InterServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/otp/send": {
             "post": {
                 "description": "This endpoint receives the user's phone in request body and generates an otp. it then sends the otp to the user's phone via sms.",
@@ -98,6 +276,178 @@ const docTemplate = `{
                         "description": "Expired",
                         "schema": {
                             "$ref": "#/definitions/responses.OtpExpiredResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/product/create": {
+            "post": {
+                "description": "Creates a new product record in the database.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Create New Product",
+                "parameters": [
+                    {
+                        "description": "create product body",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.ProductRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ProductResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Warn",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ProductExistsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InterServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/product/delete/{pk}": {
+            "delete": {
+                "description": "This endpoint deletes an existing Product from the store.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Delete exists Product",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Product Slug",
+                        "name": "pk",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.DeleteRecordResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ProductNOTExistsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InterServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/product/list": {
+            "get": {
+                "description": "This endpoint returns a list of all Products in the store.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Get All Products",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ProductResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InterServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/product/update": {
+            "put": {
+                "description": "Update an exists product record in the database.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Update Exists Product",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Product Slug",
+                        "name": "pk",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "update product body",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.ProductRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ProductResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Warn",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ProductNOTExistsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InterServerErrorResponse"
                         }
                     }
                 }
@@ -258,6 +608,59 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "github_com_iarsham_shop-api_internal_dto.CategoryRequest": {
+            "type": "object",
+            "required": [
+                "title"
+            ],
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "example": "digital"
+                }
+            }
+        },
+        "github_com_iarsham_shop-api_internal_dto.ProductRequest": {
+            "type": "object",
+            "required": [
+                "category_slug",
+                "description",
+                "name",
+                "price",
+                "stock",
+                "weight"
+            ],
+            "properties": {
+                "category_slug": {
+                    "type": "string",
+                    "example": "digital"
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 300,
+                    "minLength": 1,
+                    "example": "Contrary to popular belief, Lorem Ipsum is not simply random text"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 75,
+                    "minLength": 1,
+                    "example": "Table"
+                },
+                "price": {
+                    "type": "number",
+                    "example": 19.99
+                },
+                "stock": {
+                    "type": "integer",
+                    "example": 12
+                },
+                "weight": {
+                    "type": "integer",
+                    "example": 5
+                }
+            }
+        },
         "github_com_iarsham_shop-api_internal_dto.RefreshTokenRequest": {
             "type": "object",
             "required": [
@@ -345,17 +748,176 @@ const docTemplate = `{
                 }
             }
         },
-        "gorm.DeletedAt": {
+        "github_com_iarsham_shop-api_internal_models.Comments": {
             "type": "object",
             "properties": {
-                "time": {
+                "UpdatedAt": {
                     "type": "string"
                 },
-                "valid": {
-                    "description": "Valid is true if Time is not NULL",
-                    "type": "boolean"
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "likes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_iarsham_shop-api_internal_models.Likes"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "productsSlug": {
+                    "type": "string"
+                },
+                "usersID": {
+                    "type": "integer"
                 }
             }
+        },
+        "github_com_iarsham_shop-api_internal_models.Likes": {
+            "type": "object",
+            "properties": {
+                "commentsID": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "usersID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_iarsham_shop-api_internal_models.Products": {
+            "type": "object",
+            "properties": {
+                "UpdatedAt": {
+                    "type": "string"
+                },
+                "category_slug": {
+                    "type": "string",
+                    "example": "digital"
+                },
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_iarsham_shop-api_internal_models.Comments"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Phone Description"
+                },
+                "isAvailable": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Phone"
+                },
+                "price": {
+                    "type": "number",
+                    "example": 599
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "stock": {
+                    "type": "integer",
+                    "example": 6
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_iarsham_shop-api_internal_models.Tags"
+                    }
+                },
+                "views": {
+                    "type": "integer"
+                },
+                "weight": {
+                    "type": "number",
+                    "example": 0.7
+                }
+            }
+        },
+        "github_com_iarsham_shop-api_internal_models.Tags": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "responses.CategoryDuplicateResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "category with this title already exists"
+                }
+            }
+        },
+        "responses.CategoryExistsResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "this category already exists"
+                }
+            }
+        },
+        "responses.CategoryNotFoundResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "category not found"
+                }
+            }
+        },
+        "responses.CategoryResponse": {
+            "type": "object",
+            "properties": {
+                "UpdatedAt": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_iarsham_shop-api_internal_models.Products"
+                    }
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Mobile"
+                }
+            }
+        },
+        "responses.DeleteRecordResponse": {
+            "type": "object"
         },
         "responses.InterServerErrorResponse": {
             "type": "object",
@@ -390,6 +952,81 @@ const docTemplate = `{
                 "response": {
                     "type": "string",
                     "example": "code is incorrect"
+                }
+            }
+        },
+        "responses.ProductExistsResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "this product already exists"
+                }
+            }
+        },
+        "responses.ProductNOTExistsResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "product not found"
+                }
+            }
+        },
+        "responses.ProductResponse": {
+            "type": "object",
+            "properties": {
+                "UpdatedAt": {
+                    "type": "string"
+                },
+                "category_slug": {
+                    "type": "string",
+                    "example": "digital"
+                },
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_iarsham_shop-api_internal_models.Comments"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Phone Description"
+                },
+                "isAvailable": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Phone"
+                },
+                "price": {
+                    "type": "number",
+                    "example": 599
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "stock": {
+                    "type": "integer",
+                    "example": 6
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_iarsham_shop-api_internal_models.Tags"
+                    }
+                },
+                "views": {
+                    "type": "integer"
+                },
+                "weight": {
+                    "type": "number",
+                    "example": 0.7
                 }
             }
         },
@@ -443,11 +1080,17 @@ const docTemplate = `{
         "responses.UserResponse": {
             "type": "object",
             "properties": {
-                "createdAt": {
+                "UpdatedAt": {
                     "type": "string"
                 },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_iarsham_shop-api_internal_models.Comments"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
                 },
                 "first_name": {
                     "type": "string"
@@ -458,13 +1101,19 @@ const docTemplate = `{
                 "is_active": {
                     "type": "boolean"
                 },
+                "is_admin": {
+                    "type": "boolean"
+                },
                 "last_name": {
                     "type": "string"
                 },
-                "phone": {
-                    "type": "string"
+                "likes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_iarsham_shop-api_internal_models.Likes"
+                    }
                 },
-                "updatedAt": {
+                "phone": {
                     "type": "string"
                 }
             }

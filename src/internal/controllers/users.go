@@ -27,16 +27,17 @@ func NewUserController(logs *common.Logger) *UserController {
 }
 
 // RegisterLoginUserHandler
-// @Summary Register And Login By Phone
-// @Description Create user with firstname / lastname / phone
-// @Tags Users
-// @Accept  json
-// @Produce  json
-// @Param Request body dto.RegisterLoginRequest true "register and login body"
-// @Success 201 {object} responses.RegisterOKResponse "Success"
-// @Success 200 {object} responses.LoginOKResponse "Success"
-// @Failure 500 {object} responses.InterServerErrorResponse "Error"
-// @Router /user/register-login [post]
+//
+//	@Summary		Register And Login By Phone
+//	@Description	Create user with firstname / lastname / phone
+//	@Tags			Users
+//	@Accept			json
+//	@Produce		json
+//	@Param			Request	body		dto.RegisterLoginRequest			true	"register and login body"
+//	@Success		201		{object}	responses.RegisterOKResponse		"Success"
+//	@Success		200		{object}	responses.LoginOKResponse			"Success"
+//	@Failure		500		{object}	responses.InterServerErrorResponse	"Error"
+//	@Router			/user/register-login [post]
 func (u *UserController) RegisterLoginUserHandler(ctx *gin.Context) {
 	data := new(dto.RegisterLoginRequest)
 	if err := ctx.ShouldBindJSON(&data); err != nil {
@@ -57,14 +58,15 @@ func (u *UserController) RegisterLoginUserHandler(ctx *gin.Context) {
 }
 
 // UserHandler
-// @Summary Get User
-// @Description Retrieve user information by ID
-// @Tags Users
-// @Accept  json
-// @Produce  json
-// @Success 200 {object} responses.UserResponse "Success"
-// @Failure 500 {object} responses.InterServerErrorResponse "Error"
-// @Router /user/ [Get]
+//
+//	@Summary		Get User
+//	@Description	Retrieve user information by ID
+//	@Tags			Users
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	responses.UserResponse				"Success"
+//	@Failure		500	{object}	responses.InterServerErrorResponse	"Error"
+//	@Router			/user/ [Get]
 func (u *UserController) UserHandler(ctx *gin.Context) {
 	id := ctx.GetString("user_id")
 	userData, exists := u.service.GetUserByID(id)
@@ -76,15 +78,16 @@ func (u *UserController) UserHandler(ctx *gin.Context) {
 }
 
 // UserUpdateHandler
-// @Summary Update User
-// @Description Update user information by ID
-// @Tags Users
-// @Accept  json
-// @Produce  json
-// @Param Request body dto.UpdateUserRequest true "update user body"
-// @Success 200 {object} responses.UserResponse "Success"
-// @Failure 500 {object} responses.InterServerErrorResponse "Error"
-// @Router /user/ [Put]
+//
+//	@Summary		Update User
+//	@Description	Update user information by ID
+//	@Tags			Users
+//	@Accept			json
+//	@Produce		json
+//	@Param			Request	body		dto.UpdateUserRequest				true	"update user body"
+//	@Success		200		{object}	responses.UserResponse				"Success"
+//	@Failure		500		{object}	responses.InterServerErrorResponse	"Error"
+//	@Router			/user/ [Put]
 func (u *UserController) UserUpdateHandler(ctx *gin.Context) {
 	id := ctx.GetString("user_id")
 	data := new(dto.UpdateUserRequest)

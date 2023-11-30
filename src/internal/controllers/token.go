@@ -23,15 +23,16 @@ func NewTokenController(logs *common.Logger) *TokenController {
 }
 
 // RefreshTokenHandler
-// @Summary Get New AccessToken
-// @Description Create new access token from refresh token
-// @Tags Tokens
-// @Accept  json
-// @Produce  json
-// @Param Request body dto.RefreshTokenRequest true "refresh token body"
-// @Success 200 {object} responses.RefreshTokenResponse "Success"
-// @Failure 500 {object} responses.InterServerErrorResponse "Error"
-// @Router /token/refresh-token [Post]
+//
+//	@Summary		Get New AccessToken
+//	@Description	Create new access token from refresh token
+//	@Tags			Tokens
+//	@Accept			json
+//	@Produce		json
+//	@Param			Request	body		dto.RefreshTokenRequest				true	"refresh token body"
+//	@Success		200		{object}	responses.RefreshTokenResponse		"Success"
+//	@Failure		500		{object}	responses.InterServerErrorResponse	"Error"
+//	@Router			/token/refresh-token [Post]
 func (t *TokenController) RefreshTokenHandler(ctx *gin.Context) {
 	data := new(dto.RefreshTokenRequest)
 	if err := ctx.ShouldBindJSON(&data); err != nil {

@@ -8,7 +8,7 @@ import (
 
 type Category struct {
 	common.SlugModel
-	Title    string     `gorm:"index;not null;unique" json:"title"`
+	Title    string     `gorm:"index;not null;unique" json:"title" example:"Mobile"`
 	Products []Products `gorm:"foreignKey:CategorySlug;references:Slug"`
 }
 

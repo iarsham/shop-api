@@ -15,10 +15,7 @@ func InitialSrv(logs *common.Logger) {
 
 	err := db.OpenDB(logs)
 	common.LogError(logs, err)
-
-	err = db.MigrateTables(logs)
-	common.LogError(logs, err)
-	common.LogInfo(logs, "Postgres connected and Migration was successfully")
+	logs.Info("Postgres connected successfully")
 
 	err = db.RedisClient()
 	common.LogError(logs, err)
@@ -27,6 +24,9 @@ func InitialSrv(logs *common.Logger) {
 	if args := os.Args; len(args) > 1 {
 		if args[1] == "createadmin" {
 			db.CreateAdminUser(logs)
+		}
+		if args[1] == "migrate" {
+			db.MigrateTables(logs)
 		}
 	}
 

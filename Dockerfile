@@ -1,9 +1,9 @@
 FROM golang:1.21 AS builder
 
 WORKDIR /go/src
-COPY ../src/go.mod ../src/go.sum ./
+COPY go.mod go.sum ./
 RUN go mod download
-COPY ../src .
+COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags='-s -w' -o /go/bin/main ./cmd/main.go
 
 FROM gcr.io/distroless/static AS prod

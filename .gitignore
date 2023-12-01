@@ -20,9 +20,6 @@
 # Go workspace file
 go.work
 tmp/
-src/tmp
-src/runner.config
-deploy/.env
 .idea/
-src/runner.conf
-src/.air.toml
+.env
+.air.toml

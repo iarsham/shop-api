@@ -1,0 +1,10 @@
+.env
+.gitignore
+docker-compose.yml
+Dockerfile
+LICENSE
+makefile
+README.md
+.air.toml
+tmp/
+.idea/

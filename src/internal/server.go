@@ -7,6 +7,7 @@ import (
 	"github.com/iarsham/shop-api/internal/middlewares"
 	"github.com/iarsham/shop-api/internal/routers"
 	"github.com/iarsham/shop-api/internal/validators"
+	"os"
 )
 
 func InitialSrv(logs *common.Logger) {
@@ -22,6 +23,12 @@ func InitialSrv(logs *common.Logger) {
 	err = db.RedisClient()
 	common.LogError(logs, err)
 	common.LogInfo(logs, "Redis connected successfully")
+
+	if args := os.Args; len(args) > 1 {
+		if args[1] == "createadmin" {
+			db.CreateAdminUser(logs)
+		}
+	}
 
 	r := gin.Default()
 	routers.SetupRoutes(r, logs)

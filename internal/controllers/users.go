@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/iarsham/shop-api/pkg/constans"
 	"net/http"
 
 	"github.com/iarsham/shop-api/internal/common"
@@ -41,20 +42,20 @@ func NewUserController(logs *common.Logger) *UserController {
 func (u *UserController) RegisterLoginUserHandler(ctx *gin.Context) {
 	data := new(dto.RegisterLoginRequest)
 	if err := ctx.ShouldBindJSON(&data); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{constans.Response: err.Error()})
 		return
 	}
 	if _, exists := u.service.GetUserByPhone(data.Phone); exists {
 		go u.serviceOtp.SendOTP(data.Phone, ctx.Request)
-		ctx.JSON(http.StatusOK, gin.H{"response": "Success, otp was sent"})
+		ctx.JSON(http.StatusOK, gin.H{constans.Response: constans.OtpSuccessSent})
 		return
 	}
 	if err := u.service.RegisterLoginByPhone(data); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": "Internal server error"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{constans.Response: constans.InternalServerResponse})
 		return
 	}
 	go u.serviceOtp.SendOTP(data.Phone, ctx.Request)
-	ctx.JSON(http.StatusCreated, gin.H{"response": "Success, otp was sent"})
+	ctx.JSON(http.StatusCreated, gin.H{constans.Response: constans.OtpSuccessSent})
 }
 
 // UserHandler
@@ -68,10 +69,10 @@ func (u *UserController) RegisterLoginUserHandler(ctx *gin.Context) {
 //	@Failure		500	{object}	responses.InterServerErrorResponse	"Error"
 //	@Router			/user/ [Get]
 func (u *UserController) UserHandler(ctx *gin.Context) {
-	id := ctx.GetString("user_id")
+	id := ctx.GetString(constans.UserID)
 	userData, exists := u.service.GetUserByID(id)
 	if !exists {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": "Internal server error"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{constans.Response: constans.InternalServerResponse})
 		return
 	}
 	ctx.JSON(http.StatusOK, userData)
@@ -89,15 +90,15 @@ func (u *UserController) UserHandler(ctx *gin.Context) {
 //	@Failure		500		{object}	responses.InterServerErrorResponse	"Error"
 //	@Router			/user/ [Put]
 func (u *UserController) UserUpdateHandler(ctx *gin.Context) {
-	id := ctx.GetString("user_id")
+	id := ctx.GetString(constans.UserID)
 	data := new(dto.UpdateUserRequest)
 	if err := ctx.ShouldBindJSON(&data); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{constans.Response: err.Error()})
 		return
 	}
 	userData, err := u.service.UpdateUserByID(id, data)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": "Internal server error"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{constans.Response: constans.InternalServerResponse})
 		return
 	}
 	ctx.JSON(http.StatusOK, userData)

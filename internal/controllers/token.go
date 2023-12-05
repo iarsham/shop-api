@@ -5,6 +5,7 @@ import (
 	"github.com/iarsham/shop-api/internal/common"
 	"github.com/iarsham/shop-api/internal/dto"
 	"github.com/iarsham/shop-api/internal/services"
+	"github.com/iarsham/shop-api/pkg/constans"
 	"net/http"
 )
 
@@ -36,20 +37,20 @@ func NewTokenController(logs *common.Logger) *TokenController {
 func (t *TokenController) RefreshTokenHandler(ctx *gin.Context) {
 	data := new(dto.RefreshTokenRequest)
 	if err := ctx.ShouldBindJSON(&data); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{constans.Response: err.Error()})
 		return
 	}
 	if _, err := t.service.VerifyToken(data.RefreshToken); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{constans.Response: err.Error()})
 		return
 	}
 	claims, err := t.service.GetClaims(data.RefreshToken)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": "Internal server error"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{constans.Response: constans.InternalServerResponse})
 		return
 	}
 	userID := claims["sub"].(string)
 	user, _ := t.serviceUser.GetUserByID(userID)
 	newAccessToken, _ := t.service.GenerateAccessToken(userID, user.Phone)
-	ctx.JSON(http.StatusOK, gin.H{"response": newAccessToken})
+	ctx.JSON(http.StatusOK, gin.H{constans.Response: newAccessToken})
 }

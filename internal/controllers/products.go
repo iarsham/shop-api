@@ -5,6 +5,7 @@ import (
 	"github.com/iarsham/shop-api/internal/common"
 	"github.com/iarsham/shop-api/internal/dto"
 	"github.com/iarsham/shop-api/internal/services"
+	"github.com/iarsham/shop-api/pkg/constans"
 	"net/http"
 )
 
@@ -31,7 +32,7 @@ func NewProductsController(logs *common.Logger) *ProductsController {
 func (p *ProductsController) GetProductsHandler(ctx *gin.Context) {
 	products, err := p.service.AllProducts()
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": "Internal server error"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{constans.Response: constans.InternalServerResponse})
 		return
 	}
 	ctx.JSON(http.StatusOK, products)
@@ -52,16 +53,16 @@ func (p *ProductsController) GetProductsHandler(ctx *gin.Context) {
 func (p *ProductsController) CreateProductHandler(ctx *gin.Context) {
 	data := new(dto.ProductRequest)
 	if err := ctx.ShouldBindJSON(&data); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{constans.Response: err.Error()})
 		return
 	}
 	if _, exists := p.service.ProductByName(data.Name); exists {
-		ctx.AbortWithStatusJSON(http.StatusConflict, gin.H{"response": "this product already exists"})
+		ctx.AbortWithStatusJSON(http.StatusConflict, gin.H{constans.Response: constans.ProductExists})
 		return
 	}
 	createdUser, err := p.service.CreateProduct(data)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": "Internal server error"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{constans.Response: constans.InternalServerResponse})
 		return
 	}
 	ctx.JSON(http.StatusCreated, createdUser)
@@ -82,18 +83,18 @@ func (p *ProductsController) CreateProductHandler(ctx *gin.Context) {
 //	@Router			/product/update [put]
 func (p *ProductsController) UpdateProductHandler(ctx *gin.Context) {
 	data := new(dto.ProductRequest)
-	pk := ctx.Param("pk")
+	pk := ctx.Param(constans.PK)
 	if err := ctx.ShouldBindJSON(&data); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{constans.Response: err.Error()})
 		return
 	}
 	if _, exists := p.service.ProductByPK(pk); !exists {
-		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"response": "product not found"})
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{constans.Response: constans.ProductNotFound})
 		return
 	}
 	updatedProduct, err := p.service.UpdateProduct(pk, data)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": "Internal server error"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{constans.Response: constans.InternalServerResponse})
 		return
 	}
 	ctx.JSON(http.StatusOK, updatedProduct)
@@ -112,13 +113,13 @@ func (p *ProductsController) UpdateProductHandler(ctx *gin.Context) {
 //	@Failure		500	{object}	responses.InterServerErrorResponse	"Error"
 //	@Router			/product/delete/{pk} [delete]
 func (p *ProductsController) DeleteProductHandler(ctx *gin.Context) {
-	param := ctx.Param("pk")
+	param := ctx.Param(constans.PK)
 	if _, exists := p.service.ProductByPK(param); !exists {
-		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"response": "product not found"})
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{constans.Response: constans.ProductNotFound})
 		return
 	}
 	if err := p.service.DeleteProduct(param); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": "Internal server error"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{constans.Response: constans.InternalServerResponse})
 		return
 	}
 	ctx.JSON(http.StatusNoContent, nil)

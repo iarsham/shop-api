@@ -5,6 +5,7 @@ import (
 	"github.com/iarsham/shop-api/internal/common"
 	"github.com/iarsham/shop-api/internal/dto"
 	"github.com/iarsham/shop-api/internal/services"
+	"github.com/iarsham/shop-api/pkg/constans"
 	"net/http"
 )
 
@@ -31,7 +32,7 @@ func NewCategoryController(logs *common.Logger) *CategoryController {
 func (c *CategoryController) GetCategoriesHandler(ctx *gin.Context) {
 	categories, err := c.service.AllCategories()
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": "Internal server error"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{constans.Response: constans.InternalServerResponse})
 		return
 	}
 	ctx.JSON(http.StatusOK, categories)
@@ -52,16 +53,16 @@ func (c *CategoryController) GetCategoriesHandler(ctx *gin.Context) {
 func (c *CategoryController) CreateCategoryHandler(ctx *gin.Context) {
 	data := new(dto.CategoryRequest)
 	if err := ctx.ShouldBindJSON(&data); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{constans.Response: err.Error()})
 		return
 	}
 	if _, exists := c.service.CategoryByPK(data.Title); exists {
-		ctx.AbortWithStatusJSON(http.StatusConflict, gin.H{"response": "this category already exists"})
+		ctx.AbortWithStatusJSON(http.StatusConflict, gin.H{constans.Response: constans.CategoryExists})
 		return
 	}
 	createdCategory, err := c.service.CreateCategory(data)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": "Internal server error"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{constans.Response: constans.InternalServerResponse})
 		return
 	}
 	ctx.JSON(http.StatusCreated, createdCategory)
@@ -83,22 +84,22 @@ func (c *CategoryController) CreateCategoryHandler(ctx *gin.Context) {
 //	@Router			/category/update/{pk} [put]
 func (c *CategoryController) UpdateCategoryHandler(ctx *gin.Context) {
 	data := new(dto.CategoryRequest)
-	pk := ctx.Param("pk")
+	pk := ctx.Param(constans.PK)
 	if err := ctx.ShouldBindJSON(&data); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{constans.Response: err.Error()})
 		return
 	}
 	if _, exists := c.service.CategoryByPK(pk); !exists {
-		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"response": "category not found"})
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{constans.Response: constans.CategoryNotFound})
 		return
 	}
 	if _, exists := c.service.CategoryByTitle(data.Title); exists {
-		ctx.AbortWithStatusJSON(http.StatusConflict, gin.H{"response": "category with this title already exists"})
+		ctx.AbortWithStatusJSON(http.StatusConflict, gin.H{constans.Response: constans.CategoryByTitleExists})
 		return
 	}
 	createdCategory, err := c.service.UpdateCategory(pk, data)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": "Internal server error"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{constans.Response: constans.InternalServerResponse})
 		return
 	}
 	ctx.JSON(http.StatusOK, createdCategory)
@@ -117,13 +118,13 @@ func (c *CategoryController) UpdateCategoryHandler(ctx *gin.Context) {
 //	@Failure		500	{object}	responses.InterServerErrorResponse	"Error"
 //	@Router			/category/delete/{pk} [delete]
 func (c *CategoryController) DeleteCategoryHandler(ctx *gin.Context) {
-	pk := ctx.Param("pk")
+	pk := ctx.Param(constans.PK)
 	if _, exists := c.service.CategoryByPK(pk); !exists {
-		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"response": "category not found"})
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{constans.Response: constans.CategoryNotFound})
 		return
 	}
 	if err := c.service.DeleteCategory(pk); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": "Internal server error"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{constans.Response: constans.InternalServerResponse})
 		return
 	}
 	ctx.JSON(http.StatusNoContent, nil)

@@ -5,6 +5,7 @@ import (
 	"github.com/iarsham/shop-api/internal/common"
 	"github.com/iarsham/shop-api/internal/dto"
 	"github.com/iarsham/shop-api/internal/services"
+	"github.com/iarsham/shop-api/pkg/constans"
 	"net/http"
 	"strconv"
 )
@@ -38,15 +39,15 @@ func NewOtpController(logs *common.Logger) *OtpController {
 func (o *OtpController) SendOTPHandler(ctx *gin.Context) {
 	data := new(dto.SendOTPRequest)
 	if err := ctx.ShouldBindJSON(&data); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{constans.Response: err.Error()})
 		return
 	}
 	if _, exists := o.serviceUser.GetUserByPhone(data.Phone); !exists {
-		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"response": "user not found"})
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{constans.Response: constans.UserNotFound})
 		return
 	}
 	go o.service.SendOTP(data.Phone, ctx.Request)
-	ctx.JSON(http.StatusOK, gin.H{"response": "otp was sent"})
+	ctx.JSON(http.StatusOK, gin.H{constans.Response: constans.OtpSent})
 }
 
 // VerifyOTPHandler
@@ -66,19 +67,19 @@ func (o *OtpController) VerifyOTPHandler(ctx *gin.Context) {
 	user, _ := o.serviceUser.GetUserByIP(ctx.Request)
 	userID := strconv.Itoa(int(user.ID))
 	if err := ctx.ShouldBindJSON(&data); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{constans.Response: err.Error()})
 		return
 	}
 	if expired := o.service.IsOtpExpire(ctx.Request); expired {
-		ctx.AbortWithStatusJSON(http.StatusGone, gin.H{"response": "otp expired"})
+		ctx.AbortWithStatusJSON(http.StatusGone, gin.H{constans.Response: constans.OtpExpired})
 		return
 	}
 	if ok := o.service.IsOtpEqual(data.Code, ctx.Request); !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"response": "code is incorrect"})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{constans.Response: constans.OtpIncorrect})
 		return
 	}
 	if err := o.serviceUser.ActivateUser(ctx.Request); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": "Internal server error"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{constans.Response: constans.InternalServerResponse})
 		return
 	}
 	access, _ := o.serviceToken.GenerateAccessToken(userID, user.Phone)

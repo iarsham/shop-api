@@ -19,6 +19,19 @@ func NewProductImagesController(logs *common.Logger) *ProductImagesController {
 	}
 }
 
+// CreateProductImageHandler
+//
+//	@Summary		Create Image for products
+//	@Description	handler that is responsible for creating product images.
+//	@Tags			Product Images
+//	@Accept			json
+//	@Produce		json
+//	@Param			Request	body		dto.MediaRequest						true	"Create Product Image Body"
+//	@Param			pk		path		string									true	"Product Slug"
+//	@Success		201		{object}	responses.CreateProductImagesResponse	"Success"
+//	@Failure		409		{object}	responses.ProductNOTExistsResponse		"Warn"
+//	@Failure		500		{object}	responses.InterServerErrorResponse		"Error"
+//	@Router			/product-images/{pk}/create/ [post]
 func (p *ProductImagesController) CreateProductImageHandler(ctx *gin.Context) {
 	data := new(dto.MediaRequest)
 	param := ctx.Param(constans.PK)

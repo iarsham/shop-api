@@ -31,13 +31,14 @@ func (p *ProductImagesService) CreateProductImages(req *dto.MediaRequest, param 
 		url, exists := p.GetFileURL(file.Filename, ctx)
 		if !exists {
 			if err := ctx.SaveUploadedFile(file, constans.UploadPath+file.Filename); err != nil {
+				p.logs.Warn(err.Error())
+				return err
+			} else {
 				obj := models.ProductImages{
 					ProductsSlug: param,
 					URL:          url,
 				}
 				images = append(images, obj)
-				p.logs.Warn(err.Error())
-				return err
 			}
 		}
 	}
@@ -63,11 +64,11 @@ func (p *ProductImagesService) GetFileURL(fileName string, ctx *gin.Context) (st
 	}
 	baseURL := scheme + ctx.Request.Host
 	filePath := filepath.Join("./uploads", fileName)
+	fileURL := fmt.Sprintf("%s/media/%s", baseURL, fileName)
 	_, err := os.Stat(filePath)
 	if os.IsNotExist(err) {
-		return "", false
+		return fileURL, false
 	}
-	fileURL := fmt.Sprintf("%s/media/%s", baseURL, fileName)
 	return fileURL, true
 }
 

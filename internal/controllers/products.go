@@ -10,12 +10,14 @@ import (
 )
 
 type ProductsController struct {
-	service *services.ProductService
+	service         *services.ProductService
+	serviceCategory *services.CategoryService
 }
 
 func NewProductsController(logs *common.Logger) *ProductsController {
 	return &ProductsController{
-		service: services.NewProductService(logs),
+		service:         services.NewProductService(logs),
+		serviceCategory: services.NewCategoryService(logs),
 	}
 }
 
@@ -46,14 +48,20 @@ func (p *ProductsController) GetProductsHandler(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			Request	body		dto.ProductRequest					true	"create product body"
+//	@Param			pk		path		string								true	"Category Slug"
 //	@Success		201		{object}	responses.ProductResponse			"Success"
-//	@Success		409		{object}	responses.ProductExistsResponse		"Warn"
+//	@Failure		404		{object}	responses.CategoryNotFoundResponse	"Not Found"
+//	@Failure		409		{object}	responses.ProductExistsResponse		"Warn"
 //	@Failure		500		{object}	responses.InterServerErrorResponse	"Error"
 //	@Router			/product/create [post]
 func (p *ProductsController) CreateProductHandler(ctx *gin.Context) {
 	data := new(dto.ProductRequest)
 	if err := ctx.ShouldBindJSON(&data); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{constans.Response: err.Error()})
+		return
+	}
+	if _, exists := p.serviceCategory.CategoryByPK(data.CategorySlug); !exists {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{constans.Response: constans.CategoryNotFound})
 		return
 	}
 	if _, exists := p.service.ProductByName(data.Name); exists {
@@ -78,9 +86,9 @@ func (p *ProductsController) CreateProductHandler(ctx *gin.Context) {
 //	@Param			pk		path		string								true	"Product Slug"
 //	@Param			Request	body		dto.ProductRequest					true	"update product body"
 //	@Success		200		{object}	responses.ProductResponse			"Success"
-//	@Success		409		{object}	responses.ProductNOTExistsResponse	"Warn"
+//	@Failure		409		{object}	responses.ProductNOTExistsResponse	"Warn"
 //	@Failure		500		{object}	responses.InterServerErrorResponse	"Error"
-//	@Router			/product/update [put]
+//	@Router			/product/update/{pk} [put]
 func (p *ProductsController) UpdateProductHandler(ctx *gin.Context) {
 	data := new(dto.ProductRequest)
 	pk := ctx.Param(constans.PK)

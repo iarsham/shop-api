@@ -10,7 +10,7 @@ import (
 func ProductsRoutes(r *gin.RouterGroup, logs *common.Logger) {
 	c := controllers.NewProductsController(logs)
 	r.GET("/list", c.GetProductsHandler)
-	r.POST("/create", middlewares.JwtAuthMiddleware(logs), middlewares.IsAdminMiddleware(logs), c.CreateProductHandler)
+	r.POST("/:pk/create", middlewares.JwtAuthMiddleware(logs), middlewares.IsAdminMiddleware(logs), c.CreateProductHandler)
 	r.PUT("/update/:pk", middlewares.JwtAuthMiddleware(logs), middlewares.IsAdminMiddleware(logs), c.UpdateProductHandler)
 	r.DELETE("/delete/:pk", middlewares.JwtAuthMiddleware(logs), middlewares.IsAdminMiddleware(logs), c.DeleteProductHandler)
 }

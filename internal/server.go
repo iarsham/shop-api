@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/iarsham/shop-api/internal/common"
 	"github.com/iarsham/shop-api/internal/db"
@@ -33,6 +34,7 @@ func InitialSrv(logs *common.Logger) {
 	r := gin.Default()
 	routers.SetupRoutes(r, logs)
 	r.Use(middlewares.CorsMiddleware())
+	r.Use(static.Serve("/media", static.LocalFile("./uploads", true)))
 	err = r.Run()
 	common.LogError(logs, err)
 }

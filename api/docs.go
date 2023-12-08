@@ -281,6 +281,59 @@ const docTemplate = `{
                 }
             }
         },
+        "/product-images/{pk}/create/": {
+            "post": {
+                "description": "handler that is responsible for creating product images.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product Images"
+                ],
+                "summary": "Create Image for products",
+                "parameters": [
+                    {
+                        "description": "Create Product Image Body",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.MediaRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Product Slug",
+                        "name": "pk",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CreateProductImagesResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Warn",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ProductNOTExistsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InterServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/product/create": {
             "post": {
                 "description": "Creates a new product record in the database.",
@@ -303,6 +356,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.ProductRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Category Slug",
+                        "name": "pk",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -310,6 +370,12 @@ const docTemplate = `{
                         "description": "Success",
                         "schema": {
                             "$ref": "#/definitions/responses.ProductResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CategoryNotFoundResponse"
                         }
                     },
                     "409": {
@@ -400,7 +466,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/product/update": {
+        "/product/update/{pk}": {
             "put": {
                 "description": "Update an exists product record in the database.",
                 "consumes": [
@@ -620,6 +686,20 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_iarsham_shop-api_internal_dto.MediaRequest": {
+            "type": "object",
+            "required": [
+                "files"
+            ],
+            "properties": {
+                "files": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/multipart.FileHeader"
+                    }
+                }
+            }
+        },
         "github_com_iarsham_shop-api_internal_dto.ProductRequest": {
             "type": "object",
             "required": [
@@ -794,6 +874,26 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_iarsham_shop-api_internal_models.ProductImages": {
+            "type": "object",
+            "properties": {
+                "UpdatedAt": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "productsSlug": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_iarsham_shop-api_internal_models.Products": {
             "type": "object",
             "properties": {
@@ -816,6 +916,12 @@ const docTemplate = `{
                 "description": {
                     "type": "string",
                     "example": "Phone Description"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_iarsham_shop-api_internal_models.ProductImages"
+                    }
                 },
                 "isAvailable": {
                     "type": "boolean",
@@ -862,6 +968,20 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "multipart.FileHeader": {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "type": "string"
+                },
+                "header": {
+                    "$ref": "#/definitions/textproto.MIMEHeader"
+                },
+                "size": {
+                    "type": "integer"
                 }
             }
         },
@@ -913,6 +1033,15 @@ const docTemplate = `{
                 "title": {
                     "type": "string",
                     "example": "Mobile"
+                }
+            }
+        },
+        "responses.CreateProductImagesResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "Created Successfully"
                 }
             }
         },
@@ -995,6 +1124,12 @@ const docTemplate = `{
                 "description": {
                     "type": "string",
                     "example": "Phone Description"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_iarsham_shop-api_internal_models.ProductImages"
+                    }
                 },
                 "isAvailable": {
                     "type": "boolean",
@@ -1123,6 +1258,15 @@ const docTemplate = `{
             "properties": {
                 "response": {
                     "$ref": "#/definitions/responses.Token"
+                }
+            }
+        },
+        "textproto.MIMEHeader": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "type": "string"
                 }
             }
         }

@@ -27,7 +27,7 @@ func NewProductService(logs *common.Logger) *ProductService {
 
 func (p *ProductService) AllProducts() (*[]models.Products, error) {
 	var products []models.Products
-	err := p.db.Preload("Comments").Preload("Tags").Find(&products).Error
+	err := p.db.Preload("Images").Preload("Comments").Preload("Tags").Find(&products).Error
 	if err != nil {
 		p.logs.Warn(err.Error())
 		return nil, err

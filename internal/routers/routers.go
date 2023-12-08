@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/iarsham/shop-api/api"
 	"github.com/iarsham/shop-api/internal/common"
+	"github.com/iarsham/shop-api/internal/middlewares"
 	"net/http"
 
 	swaggerfiles "github.com/swaggo/files"
@@ -33,6 +34,10 @@ func SetupRoutes(r *gin.Engine, logs *common.Logger) {
 
 	productsGroup := apiPrefix.Group("/product")
 	ProductsRoutes(productsGroup, logs)
+
+	productImagesGroup := apiPrefix.Group("/product-images")
+	productImagesGroup.Use(middlewares.MediaSizeMiddleware())
+	ProductImagesRoutes(productImagesGroup, logs)
 
 	api.SwaggerInfo.BasePath = BaseURL
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerfiles.Handler, ginSwagger.DefaultModelsExpandDepth(-1)))

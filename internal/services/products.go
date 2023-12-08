@@ -25,11 +25,11 @@ func NewProductService(logs *common.Logger) *ProductService {
 	}
 }
 
-func (c *ProductService) AllProducts() (*[]models.Products, error) {
+func (p *ProductService) AllProducts() (*[]models.Products, error) {
 	var products []models.Products
-	err := c.db.Preload("Comments").Preload("Tags").Find(&products).Error
+	err := p.db.Preload("Comments").Preload("Tags").Find(&products).Error
 	if err != nil {
-		c.logs.Warn(err.Error())
+		p.logs.Warn(err.Error())
 		return nil, err
 	}
 	return &products, err

@@ -12,6 +12,7 @@ func MigrateTables(logs *common.Logger) {
 	tables = append(tables, models.Users{})
 	tables = append(tables, models.Category{})
 	tables = append(tables, models.Products{})
+	tables = append(tables, models.ProductImages{})
 	tables = append(tables, models.Comments{})
 	tables = append(tables, models.Tags{})
 	tables = append(tables, models.Likes{})

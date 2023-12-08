@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"github.com/iarsham/shop-api/pkg/constans"
 	"net/http"
 	"strings"
 
@@ -15,33 +16,33 @@ func JwtAuthMiddleware(logs *common.Logger) gin.HandlerFunc {
 	tokenService := services.NewTokenService(logs)
 
 	return func(ctx *gin.Context) {
-		authHeader := ctx.Request.Header.Get("Authorization")
+		authHeader := ctx.Request.Header.Get(constans.Authorization)
 		if authHeader == "" {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"response": "authenticate required"})
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{constans.Response: constans.AuthenticateRequired})
 			return
 		}
 		authToken := strings.Split(authHeader, " ")
-		if len(authToken) != 2 || strings.ToLower(authToken[0]) != "bearer" {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"response": "authorization format is not correct"})
+		if len(authToken) != 2 || strings.ToLower(authToken[0]) != constans.TokenType {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{constans.Response: constans.AuthenticateFormat})
 			return
 		}
 		claims, err := tokenService.GetClaims(authToken[1])
 		if err != nil {
 			switch err.(*jwt.ValidationError).Errors {
 			case jwt.ValidationErrorExpired:
-				ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"response": "token expired"})
+				ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{constans.Response: constans.TokenExpired})
 				return
 			default:
-				ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"response": "token invalid"})
+				ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{constans.Response: constans.TokenInvalid})
 				return
 			}
 		}
-		if claims["sub"] != nil {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"response": "refresh token not allowed"})
+		if claims[constans.SUB] != nil {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{constans.Response: constans.RefreshNotAllowed})
 			return
 		}
-		ctx.Set("user_id", claims["user_id"])
-		ctx.Set("phone", claims["phone"])
+		ctx.Set(constans.UserID, claims[constans.UserID])
+		ctx.Set(constans.Phone, constans.Phone)
 		ctx.Next()
 	}
 }
@@ -50,9 +51,9 @@ func IsAdminMiddleware(logs *common.Logger) gin.HandlerFunc {
 	userService := services.NewUserService(logs)
 
 	return func(ctx *gin.Context) {
-		userID := ctx.GetString("user_id")
+		userID := ctx.GetString(constans.UserID)
 		if user, _ := userService.GetUserByID(userID); !user.IsAdmin {
-			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"response": "permission not allowed, just admin user can perform this action"})
+			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{constans.Response: constans.PermissionNotAllowed})
 			return
 		}
 		ctx.Next()

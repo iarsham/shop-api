@@ -5,3 +5,7 @@ type InterServerErrorResponse struct {
 }
 
 type DeleteRecordResponse struct{}
+
+type PermissionNotAllowedResponse struct {
+	Response string `example:"permission not allowed, just admin user can perform this action"`
+}

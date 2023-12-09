@@ -39,6 +39,10 @@ func SetupRoutes(r *gin.Engine, logs *common.Logger) {
 	productImagesGroup.Use(middlewares.MediaSizeMiddleware())
 	ProductImagesRoutes(productImagesGroup, logs)
 
+	commentsGroup := apiPrefix.Group("/comment")
+	commentsGroup.Use(middlewares.JwtAuthMiddleware(logs))
+	CommentsRoutes(commentsGroup, logs)
+
 	api.SwaggerInfo.BasePath = BaseURL
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerfiles.Handler, ginSwagger.DefaultModelsExpandDepth(-1)))
 

@@ -9,5 +9,10 @@ import (
 
 func ProductImagesRoutes(r *gin.RouterGroup, logs *common.Logger) {
 	c := controllers.NewProductImagesController(logs)
-	r.POST("/:pk/create", middlewares.JwtAuthMiddleware(logs), middlewares.IsAdminMiddleware(logs), c.CreateProductImageHandler)
+	r.POST(
+		"/:pk/create",
+		middlewares.JwtAuthMiddleware(logs),
+		middlewares.IsAdminMiddleware(logs),
+		c.CreateProductImageHandler,
+	)
 }

@@ -191,6 +191,109 @@
                 }
             }
         },
+        "/comment/{pk}/create/": {
+            "post": {
+                "description": "handler that is responsible for creating comment for products.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Create comment for products",
+                "parameters": [
+                    {
+                        "description": "Create Comment Body",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.CommentsRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Product Slug",
+                        "name": "pk",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CommentResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Warn",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ProductNOTExistsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InterServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/comment/{pk}/delete/": {
+            "delete": {
+                "description": "handler that is responsible for deleting comment for products.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Delete comment for products",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Comment ID",
+                        "name": "pk",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.DeleteRecordResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Warn",
+                        "schema": {
+                            "$ref": "#/definitions/responses.PermissionNotAllowedResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Warn",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CommentNotFoundResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InterServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/otp/send": {
             "post": {
                 "description": "This endpoint receives the user's phone in request body and generates an otp. it then sends the otp to the user's phone via sms.",
@@ -682,6 +785,14 @@
                 }
             }
         },
+        "github_com_iarsham_shop-api_internal_dto.CommentsRequest": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_iarsham_shop-api_internal_dto.MediaRequest": {
             "type": "object",
             "required": [
@@ -1032,6 +1143,44 @@
                 }
             }
         },
+        "responses.CommentNotFoundResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "comment not found"
+                }
+            }
+        },
+        "responses.CommentResponse": {
+            "type": "object",
+            "properties": {
+                "UpdatedAt": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "likes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_iarsham_shop-api_internal_models.Likes"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "productsSlug": {
+                    "type": "string"
+                },
+                "usersID": {
+                    "type": "integer"
+                }
+            }
+        },
         "responses.CreateProductImagesResponse": {
             "type": "object",
             "properties": {
@@ -1077,6 +1226,15 @@
                 "response": {
                     "type": "string",
                     "example": "code is incorrect"
+                }
+            }
+        },
+        "responses.PermissionNotAllowedResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "permission not allowed, just admin user can perform this action"
                 }
             }
         },

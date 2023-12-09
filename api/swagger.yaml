@@ -8,6 +8,11 @@ definitions:
     required:
     - title
     type: object
+  github_com_iarsham_shop-api_internal_dto.CommentsRequest:
+    properties:
+      message:
+        type: string
+    type: object
   github_com_iarsham_shop-api_internal_dto.MediaRequest:
     properties:
       files:
@@ -252,6 +257,31 @@ definitions:
         example: Mobile
         type: string
     type: object
+  responses.CommentNotFoundResponse:
+    properties:
+      response:
+        example: comment not found
+        type: string
+    type: object
+  responses.CommentResponse:
+    properties:
+      UpdatedAt:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      likes:
+        items:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_models.Likes'
+        type: array
+      message:
+        type: string
+      productsSlug:
+        type: string
+      usersID:
+        type: integer
+    type: object
   responses.CreateProductImagesResponse:
     properties:
       response:
@@ -282,6 +312,12 @@ definitions:
     properties:
       response:
         example: code is incorrect
+        type: string
+    type: object
+  responses.PermissionNotAllowedResponse:
+    properties:
+      response:
+        example: permission not allowed, just admin user can perform this action
         type: string
     type: object
   responses.ProductExistsResponse:
@@ -534,6 +570,74 @@ paths:
       summary: Update exists Category
       tags:
       - Category
+  /comment/{pk}/create/:
+    post:
+      consumes:
+      - application/json
+      description: handler that is responsible for creating comment for products.
+      parameters:
+      - description: Create Comment Body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.CommentsRequest'
+      - description: Product Slug
+        in: path
+        name: pk
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.CommentResponse'
+        "404":
+          description: Warn
+          schema:
+            $ref: '#/definitions/responses.ProductNOTExistsResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Create comment for products
+      tags:
+      - Comments
+  /comment/{pk}/delete/:
+    delete:
+      consumes:
+      - application/json
+      description: handler that is responsible for deleting comment for products.
+      parameters:
+      - description: Comment ID
+        in: path
+        name: pk
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.DeleteRecordResponse'
+        "403":
+          description: Warn
+          schema:
+            $ref: '#/definitions/responses.PermissionNotAllowedResponse'
+        "404":
+          description: Warn
+          schema:
+            $ref: '#/definitions/responses.CommentNotFoundResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Delete comment for products
+      tags:
+      - Comments
   /otp/send:
     post:
       consumes:

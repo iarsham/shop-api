@@ -195,6 +195,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/comment-likes/{pk}/add/": {
+            "post": {
+                "description": "handler that is responsible for add like to comment for products.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Likes"
+                ],
+                "summary": "Add like to comment for products",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Comment ID",
+                        "name": "pk",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Success"
+                        }
+                    },
+                    "403": {
+                        "description": "Warn",
+                        "schema": {
+                            "$ref": "#/definitions/responses.OwnerCantLikeCommentResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Warn",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CommentNotFoundResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InterServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/comment/{pk}/create/": {
             "post": {
                 "description": "handler that is responsible for creating comment for products.",
@@ -280,7 +330,7 @@ const docTemplate = `{
                     "403": {
                         "description": "Warn",
                         "schema": {
-                            "$ref": "#/definitions/responses.PermissionNotAllowedResponse"
+                            "$ref": "#/definitions/responses.PermissionAdminAllowedResponse"
                         }
                     },
                     "404": {
@@ -952,33 +1002,13 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "likes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_iarsham_shop-api_internal_models.Likes"
-                    }
+                    "type": "integer"
                 },
                 "message": {
                     "type": "string"
                 },
                 "productsSlug": {
                     "type": "string"
-                },
-                "usersID": {
-                    "type": "integer"
-                }
-            }
-        },
-        "github_com_iarsham_shop-api_internal_models.Likes": {
-            "type": "object",
-            "properties": {
-                "commentsID": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
                 },
                 "usersID": {
                     "type": "integer"
@@ -1169,10 +1199,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "likes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_iarsham_shop-api_internal_models.Likes"
-                    }
+                    "type": "integer"
                 },
                 "message": {
                     "type": "string"
@@ -1233,7 +1260,16 @@ const docTemplate = `{
                 }
             }
         },
-        "responses.PermissionNotAllowedResponse": {
+        "responses.OwnerCantLikeCommentResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "owner can't like"
+                }
+            }
+        },
+        "responses.PermissionAdminAllowedResponse": {
             "type": "object",
             "properties": {
                 "response": {
@@ -1350,6 +1386,15 @@ const docTemplate = `{
                 }
             }
         },
+        "responses.Success": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "Success"
+                }
+            }
+        },
         "responses.Token": {
             "type": "object",
             "properties": {
@@ -1399,12 +1444,6 @@ const docTemplate = `{
                 },
                 "last_name": {
                     "type": "string"
-                },
-                "likes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_iarsham_shop-api_internal_models.Likes"
-                    }
                 },
                 "phone": {
                     "type": "string"

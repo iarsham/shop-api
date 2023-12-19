@@ -11,3 +11,8 @@ func CommentsRoutes(r *gin.RouterGroup, logs *common.Logger) {
 	r.POST("/:pk/create", c.CreateCommentHandler)
 	r.DELETE("/:pk/delete", c.DeleteCommentHandler)
 }
+
+func CommentLikesRoutes(r *gin.RouterGroup, logs *common.Logger) {
+	c := controllers.NewCommentsController(logs)
+	r.POST("/:pk/add", c.AddLikeToCommentHandler)
+}

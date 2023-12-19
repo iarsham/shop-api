@@ -62,11 +62,11 @@ func (c *CommentsController) CreateCommentHandler(ctx *gin.Context) {
 //	@Tags			Comments
 //	@Accept			json
 //	@Produce		json
-//	@Param			pk	path		string									true	"Comment ID"
-//	@Success		204	{object}	responses.DeleteRecordResponse			"Success"
-//	@Failure		404	{object}	responses.CommentNotFoundResponse		"Warn"
-//	@Failure		403	{object}	responses.PermissionNotAllowedResponse	"Warn"
-//	@Failure		500	{object}	responses.InterServerErrorResponse		"Error"
+//	@Param			pk	path		string										true	"Comment ID"
+//	@Success		204	{object}	responses.DeleteRecordResponse				"Success"
+//	@Failure		404	{object}	responses.CommentNotFoundResponse			"Warn"
+//	@Failure		403	{object}	responses.PermissionAdminAllowedResponse	"Warn"
+//	@Failure		500	{object}	responses.InterServerErrorResponse			"Error"
 //	@Router			/comment/{pk}/delete/ [delete]
 func (c *CommentsController) DeleteCommentHandler(ctx *gin.Context) {
 	userID, _ := strconv.Atoi(ctx.GetString(constans.UserID))
@@ -78,12 +78,43 @@ func (c *CommentsController) DeleteCommentHandler(ctx *gin.Context) {
 	}
 	if userID != comment.UsersID {
 		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{constans.Response: constans.PermissionNotAllowed})
-
 		return
 	}
 	if err := c.service.DeleteComment(param); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{constans.Response: err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{constans.Response: constans.InternalServerResponse})
 		return
 	}
 	ctx.JSON(http.StatusNoContent, nil)
+}
+
+// AddLikeToCommentHandler
+//
+//	@Summary		Add like to comment for products
+//	@Description	handler that is responsible for add like to comment for products.
+//	@Tags			Likes
+//	@Accept			json
+//	@Produce		json
+//	@Param			pk	path		string									true	"Comment ID"
+//	@Success		200	{object}	responses.Success						"Success"
+//	@Failure		404	{object}	responses.CommentNotFoundResponse		"Warn"
+//	@Failure		403	{object}	responses.OwnerCantLikeCommentResponse	"Warn"
+//	@Failure		500	{object}	responses.InterServerErrorResponse		"Error"
+//	@Router			/comment-likes/{pk}/add/ [post]
+func (c *CommentsController) AddLikeToCommentHandler(ctx *gin.Context) {
+	userID, _ := strconv.Atoi(ctx.GetString(constans.UserID))
+	param := ctx.Param(constans.PK)
+	comment, exists := c.service.CommentByPK(param)
+	if !exists {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{constans.Response: constans.CommentNotFound})
+		return
+	}
+	if userID == comment.UsersID {
+		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{constans.Response: constans.OwnerCantLike})
+		return
+	}
+	if err := c.service.AddLike(param, userID); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{constans.Response: constans.InternalServerResponse})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{constans.Response: constans.Success})
 }

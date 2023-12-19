@@ -53,7 +53,7 @@ func IsAdminMiddleware(logs *common.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		userID := ctx.GetString(constans.UserID)
 		if user, _ := userService.GetUserByID(userID); !user.IsAdmin {
-			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{constans.Response: constans.PermissionNotAllowed})
+			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{constans.Response: constans.PermissionAdminAllowed})
 			return
 		}
 		ctx.Next()

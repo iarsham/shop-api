@@ -7,3 +7,7 @@ type CommentResponse models.Comments
 type CommentNotFoundResponse struct {
 	Response string `example:"comment not found"`
 }
+
+type OwnerCantLikeCommentResponse struct {
+	Response string `example:"owner can't like"`
+}

@@ -11,5 +11,4 @@ type Users struct {
 	IsActive  bool       `gorm:"not null;default:false" json:"is_active"`
 	IsAdmin   bool       `gorm:"not null;default:false" json:"is_admin"`
 	Comments  []Comments `gorm:"foreignKey:UsersID;references:ID"`
-	Likes     []Likes    `gorm:"foreignKey:UsersID;references:ID"`
 }

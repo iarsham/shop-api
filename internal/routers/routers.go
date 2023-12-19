@@ -43,6 +43,10 @@ func SetupRoutes(r *gin.Engine, logs *common.Logger) {
 	commentsGroup.Use(middlewares.JwtAuthMiddleware(logs))
 	CommentsRoutes(commentsGroup, logs)
 
+	commentLikesGroup := apiPrefix.Group("/comment-likes/")
+	commentsGroup.Use(middlewares.JwtAuthMiddleware(logs))
+	CommentLikesRoutes(commentLikesGroup, logs)
+
 	api.SwaggerInfo.BasePath = BaseURL
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerfiles.Handler, ginSwagger.DefaultModelsExpandDepth(-1)))
 

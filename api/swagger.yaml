@@ -127,24 +127,11 @@ definitions:
       id:
         type: integer
       likes:
-        items:
-          $ref: '#/definitions/github_com_iarsham_shop-api_internal_models.Likes'
-        type: array
+        type: integer
       message:
         type: string
       productsSlug:
         type: string
-      usersID:
-        type: integer
-    type: object
-  github_com_iarsham_shop-api_internal_models.Likes:
-    properties:
-      commentsID:
-        type: integer
-      created_at:
-        type: string
-      id:
-        type: integer
       usersID:
         type: integer
     type: object
@@ -272,9 +259,7 @@ definitions:
       id:
         type: integer
       likes:
-        items:
-          $ref: '#/definitions/github_com_iarsham_shop-api_internal_models.Likes'
-        type: array
+        type: integer
       message:
         type: string
       productsSlug:
@@ -314,7 +299,13 @@ definitions:
         example: code is incorrect
         type: string
     type: object
-  responses.PermissionNotAllowedResponse:
+  responses.OwnerCantLikeCommentResponse:
+    properties:
+      response:
+        example: owner can't like
+        type: string
+    type: object
+  responses.PermissionAdminAllowedResponse:
     properties:
       response:
         example: permission not allowed, just admin user can perform this action
@@ -394,6 +385,12 @@ definitions:
         example: otp was sent
         type: string
     type: object
+  responses.Success:
+    properties:
+      response:
+        example: Success
+        type: string
+    type: object
   responses.Token:
     properties:
       access-token:
@@ -427,10 +424,6 @@ definitions:
         type: boolean
       last_name:
         type: string
-      likes:
-        items:
-          $ref: '#/definitions/github_com_iarsham_shop-api_internal_models.Likes'
-        type: array
       phone:
         type: string
     type: object
@@ -570,6 +563,39 @@ paths:
       summary: Update exists Category
       tags:
       - Category
+  /comment-likes/{pk}/add/:
+    post:
+      consumes:
+      - application/json
+      description: handler that is responsible for add like to comment for products.
+      parameters:
+      - description: Comment ID
+        in: path
+        name: pk
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.Success'
+        "403":
+          description: Warn
+          schema:
+            $ref: '#/definitions/responses.OwnerCantLikeCommentResponse'
+        "404":
+          description: Warn
+          schema:
+            $ref: '#/definitions/responses.CommentNotFoundResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Add like to comment for products
+      tags:
+      - Likes
   /comment/{pk}/create/:
     post:
       consumes:
@@ -626,7 +652,7 @@ paths:
         "403":
           description: Warn
           schema:
-            $ref: '#/definitions/responses.PermissionNotAllowedResponse'
+            $ref: '#/definitions/responses.PermissionAdminAllowedResponse'
         "404":
           description: Warn
           schema:

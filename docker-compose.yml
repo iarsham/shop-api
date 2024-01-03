@@ -1,0 +1,49 @@
+version: '3.9'
+
+x-base:
+  &base
+  env_file:
+    - ./.env
+  networks:
+    - shop-network
+  restart: always
+
+
+services:
+  postgres:
+    <<: *base
+    container_name: postgres
+    image: postgres:latest
+    expose:
+      - ${PG_PORT}
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${PG_DB}
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_PASSWORD=${PG_PASS}
+
+  redis:
+    <<: *base
+    image: redis:latest
+    container_name: redis
+    expose:
+      - ${REDIS_PORT}
+
+  app:
+    <<: *base
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shop
+    ports:
+      - "80:${PORT}"
+    depends_on:
+      - postgres
+      - redis
+
+networks:
+  shop-network:
+
+volumes:
+  db:

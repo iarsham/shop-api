@@ -1,0 +1,993 @@
+basePath: /api/v1/
+definitions:
+  github_com_iarsham_shop-api_internal_dto.CategoryRequest:
+    properties:
+      title:
+        example: digital
+        type: string
+    required:
+    - title
+    type: object
+  github_com_iarsham_shop-api_internal_dto.CommentsRequest:
+    properties:
+      message:
+        type: string
+    type: object
+  github_com_iarsham_shop-api_internal_dto.MediaRequest:
+    properties:
+      files:
+        items:
+          $ref: '#/definitions/multipart.FileHeader'
+        type: array
+    required:
+    - files
+    type: object
+  github_com_iarsham_shop-api_internal_dto.ProductRequest:
+    properties:
+      description:
+        example: Contrary to popular belief, Lorem Ipsum is not simply random text
+        maxLength: 300
+        minLength: 1
+        type: string
+      name:
+        example: Table
+        maxLength: 75
+        minLength: 1
+        type: string
+      price:
+        example: 19.99
+        type: number
+      stock:
+        example: 12
+        type: integer
+      tags:
+        example:
+        - ai
+        - ml
+        items:
+          type: string
+        type: array
+      weight:
+        example: 5
+        type: integer
+    required:
+    - description
+    - name
+    - price
+    - stock
+    - weight
+    type: object
+  github_com_iarsham_shop-api_internal_dto.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY5NDE4MTcsInBob25lIjoiKzk4OTAyMTMxMjIyNCIsInVzZXJfaWQiOiI1In0.hzmZdfltaMDWaiTwO8IG1uPEyXOsu3JBs6giU2BDeMI
+        type: string
+    required:
+    - refresh_token
+    type: object
+  github_com_iarsham_shop-api_internal_dto.RegisterLoginRequest:
+    properties:
+      first_name:
+        example: James
+        maxLength: 75
+        minLength: 1
+        type: string
+      last_name:
+        example: Rodriguez
+        maxLength: 75
+        minLength: 1
+        type: string
+      phone:
+        example: "+989021112299"
+        maxLength: 13
+        minLength: 11
+        type: string
+    required:
+    - phone
+    type: object
+  github_com_iarsham_shop-api_internal_dto.SendOTPRequest:
+    properties:
+      phone:
+        example: "+989021112299"
+        maxLength: 13
+        minLength: 11
+        type: string
+    required:
+    - phone
+    type: object
+  github_com_iarsham_shop-api_internal_dto.UpdateUserRequest:
+    properties:
+      first_name:
+        example: James
+        maxLength: 75
+        minLength: 1
+        type: string
+      last_name:
+        example: Rodriguez
+        maxLength: 75
+        minLength: 1
+        type: string
+    required:
+    - first_name
+    - last_name
+    type: object
+  github_com_iarsham_shop-api_internal_dto.VerifyOTPRequest:
+    properties:
+      code:
+        example: "241960"
+        maxLength: 6
+        minLength: 6
+        type: string
+    required:
+    - code
+    type: object
+  github_com_iarsham_shop-api_internal_models.Comments:
+    properties:
+      UpdatedAt:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      likes:
+        type: integer
+      message:
+        type: string
+      productsSlug:
+        type: string
+      usersID:
+        type: integer
+    type: object
+  github_com_iarsham_shop-api_internal_models.ProductImages:
+    properties:
+      UpdatedAt:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      productsSlug:
+        type: string
+      url:
+        type: string
+    type: object
+  github_com_iarsham_shop-api_internal_models.Products:
+    properties:
+      UpdatedAt:
+        type: string
+      category_slug:
+        example: digital
+        type: string
+      comments:
+        items:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_models.Comments'
+        type: array
+      created_at:
+        type: string
+      description:
+        example: Phone Description
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_models.ProductImages'
+        type: array
+      isAvailable:
+        example: true
+        type: boolean
+      name:
+        example: Phone
+        type: string
+      price:
+        example: 599
+        type: number
+      slug:
+        type: string
+      stock:
+        example: 6
+        type: integer
+      tags:
+        items:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_models.Tags'
+        type: array
+      views:
+        type: integer
+      weight:
+        example: 0.7
+        type: number
+    type: object
+  github_com_iarsham_shop-api_internal_models.Tags:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  multipart.FileHeader:
+    properties:
+      filename:
+        type: string
+      header:
+        $ref: '#/definitions/textproto.MIMEHeader'
+      size:
+        type: integer
+    type: object
+  responses.CategoryDuplicateResponse:
+    properties:
+      response:
+        example: category with this title already exists
+        type: string
+    type: object
+  responses.CategoryExistsResponse:
+    properties:
+      response:
+        example: this category already exists
+        type: string
+    type: object
+  responses.CategoryNotFoundResponse:
+    properties:
+      response:
+        example: category not found
+        type: string
+    type: object
+  responses.CategoryResponse:
+    properties:
+      UpdatedAt:
+        type: string
+      created_at:
+        type: string
+      products:
+        items:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_models.Products'
+        type: array
+      slug:
+        type: string
+      title:
+        example: Mobile
+        type: string
+    type: object
+  responses.CommentNotFoundResponse:
+    properties:
+      response:
+        example: comment not found
+        type: string
+    type: object
+  responses.CommentResponse:
+    properties:
+      UpdatedAt:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      likes:
+        type: integer
+      message:
+        type: string
+      productsSlug:
+        type: string
+      usersID:
+        type: integer
+    type: object
+  responses.CreateProductImagesResponse:
+    properties:
+      response:
+        example: Created Successfully
+        type: string
+    type: object
+  responses.DeleteRecordResponse:
+    type: object
+  responses.InterServerErrorResponse:
+    properties:
+      response:
+        example: Internal server error
+        type: string
+    type: object
+  responses.LoginOKResponse:
+    properties:
+      response:
+        example: Success, otp was sent
+        type: string
+    type: object
+  responses.OtpExpiredResponse:
+    properties:
+      response:
+        example: otp expired
+        type: string
+    type: object
+  responses.OtpIncorrectResponse:
+    properties:
+      response:
+        example: code is incorrect
+        type: string
+    type: object
+  responses.OwnerCantLikeCommentResponse:
+    properties:
+      response:
+        example: owner can't like
+        type: string
+    type: object
+  responses.PermissionAdminAllowedResponse:
+    properties:
+      response:
+        example: permission not allowed, just admin user can perform this action
+        type: string
+    type: object
+  responses.ProductExistsResponse:
+    properties:
+      response:
+        example: this product already exists
+        type: string
+    type: object
+  responses.ProductNOTExistsResponse:
+    properties:
+      response:
+        example: product not found
+        type: string
+    type: object
+  responses.ProductResponse:
+    properties:
+      UpdatedAt:
+        type: string
+      category_slug:
+        example: digital
+        type: string
+      comments:
+        items:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_models.Comments'
+        type: array
+      created_at:
+        type: string
+      description:
+        example: Phone Description
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_models.ProductImages'
+        type: array
+      isAvailable:
+        example: true
+        type: boolean
+      name:
+        example: Phone
+        type: string
+      price:
+        example: 599
+        type: number
+      slug:
+        type: string
+      stock:
+        example: 6
+        type: integer
+      tags:
+        items:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_models.Tags'
+        type: array
+      views:
+        type: integer
+      weight:
+        example: 0.7
+        type: number
+    type: object
+  responses.RefreshTokenResponse:
+    properties:
+      response:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY5NDE4MTcsInBob25lIjoiKzk4OTAyMTMxMjIyNCIsInVzZXJfaWQiOiI1In0.hzmZdfltaMDWaiTwO8IG1uPEyXOsu3JBs6giU2BDeMI
+        type: string
+    type: object
+  responses.RegisterOKResponse:
+    properties:
+      response:
+        example: Success, otp was sent
+        type: string
+    type: object
+  responses.SendOtpOkResponse:
+    properties:
+      response:
+        example: otp was sent
+        type: string
+    type: object
+  responses.Success:
+    properties:
+      response:
+        example: Success
+        type: string
+    type: object
+  responses.Token:
+    properties:
+      access-token:
+        type: string
+      refresh-token:
+        type: string
+    type: object
+  responses.UserNotFoundResponse:
+    properties:
+      response:
+        example: user not found
+        type: string
+    type: object
+  responses.UserResponse:
+    properties:
+      UpdatedAt:
+        type: string
+      comments:
+        items:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_models.Comments'
+        type: array
+      created_at:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      is_admin:
+        type: boolean
+      last_name:
+        type: string
+      phone:
+        type: string
+    type: object
+  responses.VerifyOTPResponse:
+    properties:
+      response:
+        $ref: '#/definitions/responses.Token'
+    type: object
+  textproto.MIMEHeader:
+    additionalProperties:
+      items:
+        type: string
+      type: array
+    type: object
+host: localhost:8000
+info:
+  contact:
+    email: arshamdev2001@gmail.com
+  title: Shop API Document
+paths:
+  /category/create:
+    post:
+      consumes:
+      - application/json
+      description: 'This endpoint creates a new category in the store. The request
+        body must contain the following information:'
+      parameters:
+      - description: create category body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.CategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.CategoryResponse'
+        "409":
+          description: Warn
+          schema:
+            $ref: '#/definitions/responses.CategoryExistsResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Create New Category
+      tags:
+      - Category
+  /category/delete/{pk}:
+    delete:
+      consumes:
+      - application/json
+      description: This endpoint deletes an existing Category from the store.
+      parameters:
+      - description: Category Slug
+        in: path
+        name: pk
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.DeleteRecordResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.CategoryNotFoundResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Delete exists Category
+      tags:
+      - Category
+  /category/list:
+    get:
+      consumes:
+      - application/json
+      description: This endpoint returns a list of all categories in the store.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.CategoryResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Get All Categories
+      tags:
+      - Category
+  /category/update/{pk}:
+    put:
+      consumes:
+      - application/json
+      description: 'This endpoint updates an existing Category in the store. The request
+        body must contain the following information:'
+      parameters:
+      - description: update category body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.CategoryRequest'
+      - description: Category Slug
+        in: path
+        name: pk
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.CategoryResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.CategoryNotFoundResponse'
+        "409":
+          description: Warn
+          schema:
+            $ref: '#/definitions/responses.CategoryDuplicateResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Update exists Category
+      tags:
+      - Category
+  /comment-likes/{pk}/add/:
+    post:
+      consumes:
+      - application/json
+      description: handler that is responsible for add like to comment for products.
+      parameters:
+      - description: Comment ID
+        in: path
+        name: pk
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.Success'
+        "403":
+          description: Warn
+          schema:
+            $ref: '#/definitions/responses.OwnerCantLikeCommentResponse'
+        "404":
+          description: Warn
+          schema:
+            $ref: '#/definitions/responses.CommentNotFoundResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Add like to comment for products
+      tags:
+      - Likes
+  /comment/{pk}/create/:
+    post:
+      consumes:
+      - application/json
+      description: handler that is responsible for creating comment for products.
+      parameters:
+      - description: Create Comment Body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.CommentsRequest'
+      - description: Product Slug
+        in: path
+        name: pk
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.CommentResponse'
+        "404":
+          description: Warn
+          schema:
+            $ref: '#/definitions/responses.ProductNOTExistsResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Create comment for products
+      tags:
+      - Comments
+  /comment/{pk}/delete/:
+    delete:
+      consumes:
+      - application/json
+      description: handler that is responsible for deleting comment for products.
+      parameters:
+      - description: Comment ID
+        in: path
+        name: pk
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.DeleteRecordResponse'
+        "403":
+          description: Warn
+          schema:
+            $ref: '#/definitions/responses.PermissionAdminAllowedResponse'
+        "404":
+          description: Warn
+          schema:
+            $ref: '#/definitions/responses.CommentNotFoundResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Delete comment for products
+      tags:
+      - Comments
+  /otp/send:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint receives the user's phone in request body and generates
+        an otp. it then sends the otp to the user's phone via sms.
+      parameters:
+      - description: send otp body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.SendOTPRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.SendOtpOkResponse'
+        "404":
+          description: not found
+          schema:
+            $ref: '#/definitions/responses.UserNotFoundResponse'
+      summary: Send OTP
+      tags:
+      - OTP
+  /otp/verify:
+    post:
+      consumes:
+      - application/json
+      description: this endpoint receives the user's otp code in request body.if code
+        match, the verification is successfully.
+      parameters:
+      - description: verify otp body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.VerifyOTPRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.VerifyOTPResponse'
+        "401":
+          description: incorrect
+          schema:
+            $ref: '#/definitions/responses.OtpIncorrectResponse'
+        "410":
+          description: Expired
+          schema:
+            $ref: '#/definitions/responses.OtpExpiredResponse'
+      summary: Verify OTP
+      tags:
+      - OTP
+  /product-images/{pk}/create/:
+    post:
+      consumes:
+      - application/json
+      description: handler that is responsible for creating product images.
+      parameters:
+      - description: Create Product Image Body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.MediaRequest'
+      - description: Product Slug
+        in: path
+        name: pk
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.CreateProductImagesResponse'
+        "409":
+          description: Warn
+          schema:
+            $ref: '#/definitions/responses.ProductNOTExistsResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Create Image for products
+      tags:
+      - Product Images
+  /product/{pk}/create:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new product record in the database.
+      parameters:
+      - description: create product body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.ProductRequest'
+      - description: Category Slug
+        in: path
+        name: pk
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.ProductResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.CategoryNotFoundResponse'
+        "409":
+          description: Warn
+          schema:
+            $ref: '#/definitions/responses.ProductExistsResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Create New Product
+      tags:
+      - Product
+  /product/delete/{pk}:
+    delete:
+      consumes:
+      - application/json
+      description: This endpoint deletes an existing Product from the store.
+      parameters:
+      - description: Product Slug
+        in: path
+        name: pk
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.DeleteRecordResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.ProductNOTExistsResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Delete exists Product
+      tags:
+      - Product
+  /product/list:
+    get:
+      consumes:
+      - application/json
+      description: This endpoint returns a list of all Products in the store.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.ProductResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Get All Products
+      tags:
+      - Product
+  /product/update/{pk}:
+    put:
+      consumes:
+      - application/json
+      description: Update an exists product record in the database.
+      parameters:
+      - description: Product Slug
+        in: path
+        name: pk
+        required: true
+        type: string
+      - description: update product body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.ProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.ProductResponse'
+        "409":
+          description: Warn
+          schema:
+            $ref: '#/definitions/responses.ProductNOTExistsResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Update Exists Product
+      tags:
+      - Product
+  /token/refresh-token:
+    post:
+      consumes:
+      - application/json
+      description: Create new access token from refresh token
+      parameters:
+      - description: refresh token body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.RefreshTokenResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Get New AccessToken
+      tags:
+      - Tokens
+  /user/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve user information by ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.UserResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Get User
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Update user information by ID
+      parameters:
+      - description: update user body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.UserResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Update User
+      tags:
+      - Users
+  /user/register-login:
+    post:
+      consumes:
+      - application/json
+      description: Create user with firstname / lastname / phone
+      parameters:
+      - description: register and login body
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_iarsham_shop-api_internal_dto.RegisterLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.LoginOKResponse'
+        "201":
+          description: Success
+          schema:
+            $ref: '#/definitions/responses.RegisterOKResponse'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/responses.InterServerErrorResponse'
+      summary: Register And Login By Phone
+      tags:
+      - Users
+schemes:
+- http
+- https
+securityDefinitions:
+  Authorization:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

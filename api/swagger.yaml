@@ -24,9 +24,6 @@ definitions:
     type: object
   github_com_iarsham_shop-api_internal_dto.ProductRequest:
     properties:
-      category_slug:
-        example: digital
-        type: string
       description:
         example: Contrary to popular belief, Lorem Ipsum is not simply random text
         maxLength: 300
@@ -43,11 +40,17 @@ definitions:
       stock:
         example: 12
         type: integer
+      tags:
+        example:
+        - ai
+        - ml
+        items:
+          type: string
+        type: array
       weight:
         example: 5
         type: integer
     required:
-    - category_slug
     - description
     - name
     - price
@@ -757,7 +760,7 @@ paths:
       summary: Create Image for products
       tags:
       - Product Images
-  /product/create:
+  /product/{pk}/create:
     post:
       consumes:
       - application/json

@@ -487,65 +487,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/product/create": {
-            "post": {
-                "description": "Creates a new product record in the database.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Product"
-                ],
-                "summary": "Create New Product",
-                "parameters": [
-                    {
-                        "description": "create product body",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.ProductRequest"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Category Slug",
-                        "name": "pk",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Success",
-                        "schema": {
-                            "$ref": "#/definitions/responses.ProductResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/responses.CategoryNotFoundResponse"
-                        }
-                    },
-                    "409": {
-                        "description": "Warn",
-                        "schema": {
-                            "$ref": "#/definitions/responses.ProductExistsResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Error",
-                        "schema": {
-                            "$ref": "#/definitions/responses.InterServerErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/product/delete/{pk}": {
             "delete": {
                 "description": "This endpoint deletes an existing Product from the store.",
@@ -661,6 +602,65 @@ const docTemplate = `{
                         "description": "Warn",
                         "schema": {
                             "$ref": "#/definitions/responses.ProductNOTExistsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InterServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/product/{pk}/create": {
+            "post": {
+                "description": "Creates a new product record in the database.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Create New Product",
+                "parameters": [
+                    {
+                        "description": "create product body",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_iarsham_shop-api_internal_dto.ProductRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Category Slug",
+                        "name": "pk",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ProductResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.CategoryNotFoundResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Warn",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ProductExistsResponse"
                         }
                     },
                     "500": {
@@ -864,7 +864,6 @@ const docTemplate = `{
         "github_com_iarsham_shop-api_internal_dto.ProductRequest": {
             "type": "object",
             "required": [
-                "category_slug",
                 "description",
                 "name",
                 "price",
@@ -872,10 +871,6 @@ const docTemplate = `{
                 "weight"
             ],
             "properties": {
-                "category_slug": {
-                    "type": "string",
-                    "example": "digital"
-                },
                 "description": {
                     "type": "string",
                     "maxLength": 300,
@@ -895,6 +890,16 @@ const docTemplate = `{
                 "stock": {
                     "type": "integer",
                     "example": 12
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "ai",
+                        "ml"
+                    ]
                 },
                 "weight": {
                     "type": "integer",

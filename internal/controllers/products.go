@@ -53,14 +53,15 @@ func (p *ProductsController) GetProductsHandler(ctx *gin.Context) {
 //	@Failure		404		{object}	responses.CategoryNotFoundResponse	"Not Found"
 //	@Failure		409		{object}	responses.ProductExistsResponse		"Warn"
 //	@Failure		500		{object}	responses.InterServerErrorResponse	"Error"
-//	@Router			/product/create [post]
+//	@Router			/product/{pk}/create [post]
 func (p *ProductsController) CreateProductHandler(ctx *gin.Context) {
 	data := new(dto.ProductRequest)
+	param := ctx.Param("pk")
 	if err := ctx.ShouldBindJSON(&data); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{constans.Response: err.Error()})
 		return
 	}
-	if _, exists := p.serviceCategory.CategoryByPK(data.CategorySlug); !exists {
+	if _, exists := p.serviceCategory.CategoryByPK(param); !exists {
 		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{constans.Response: constans.CategoryNotFound})
 		return
 	}
@@ -68,7 +69,7 @@ func (p *ProductsController) CreateProductHandler(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusConflict, gin.H{constans.Response: constans.ProductExists})
 		return
 	}
-	createdUser, err := p.service.CreateProduct(data)
+	createdUser, err := p.service.CreateProduct(data, param)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{constans.Response: constans.InternalServerResponse})
 		return
